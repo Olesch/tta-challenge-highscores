@@ -1,0 +1,31 @@
+{
+  "name": "tta-challenges",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply tta-challenges --local",
+    "db:migrate:remote": "wrangler d1 migrations apply tta-challenges --remote",
+    "db:import:local": "wrangler d1 execute tta-challenges --local --file=seed/import.sql",
+    "db:import:remote": "wrangler d1 execute tta-challenges --remote --file=seed/import.sql",
+    "typecheck": "tsc -b"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.65.0",
+    "@cloudflare/workers-types": "^5.20261024.1",
+    "@preact/preset-vite": "^2.10.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "wrangler": "^4.152.0"
+  },
+  "dependencies": {
+    "preact": "^11.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261019.1": true
+  }
+}

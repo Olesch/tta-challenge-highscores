@@ -1,0 +1,617 @@
+[
+ {
+  "number": 1,
+  "date": "2024-09-22",
+  "challengeId": "cheap1_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 650
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "RutgerHauer",
+    "score": 406
+   }
+  ]
+ },
+ {
+  "number": 2,
+  "date": "2024-09-29",
+  "challengeId": "fate1_mix",
+  "winners": [
+   {
+    "name": "wolvs",
+    "score": 299
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 292
+   }
+  ]
+ },
+ {
+  "number": 3,
+  "date": "2024-10-06",
+  "challengeId": "impact1_mix",
+  "winners": [
+   {
+    "name": "mwi",
+    "score": 309
+   },
+   {
+    "name": "wolvs",
+    "score": 309
+   }
+  ],
+  "runnersUp": []
+ },
+ {
+  "number": 4,
+  "date": "2024-10-13",
+  "challengeId": "wonders1_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 511
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "wolvs",
+    "score": 376
+   }
+  ]
+ },
+ {
+  "number": 5,
+  "date": "2024-10-20",
+  "challengeId": "immortals1_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 486
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Martin_Pecheur",
+    "score": 405
+   }
+  ]
+ },
+ {
+  "number": 6,
+  "date": "2024-10-27",
+  "challengeId": "mix1_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 522
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Wawrzyniec",
+    "score": 382
+   },
+   {
+    "name": "wolvs",
+    "score": 332
+   }
+  ]
+ },
+ {
+  "number": 7,
+  "date": "2024-11-03",
+  "challengeId": "1ai_mix",
+  "winners": [
+   {
+    "name": "wolvs",
+    "score": 371
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Weidenbaum",
+    "score": 338
+   }
+  ]
+ },
+ {
+  "number": 8,
+  "date": "2024-11-17",
+  "challengeId": "kidnappers1_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 556
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Fourierrr",
+    "score": 307
+   }
+  ]
+ },
+ {
+  "number": 9,
+  "date": "2024-11-24",
+  "challengeId": "time_traveller1_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 332
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Fourierrr",
+    "score": 248
+   }
+  ]
+ },
+ {
+  "number": 10,
+  "date": "2024-12-01",
+  "challengeId": "epic1_mix",
+  "winners": [
+   {
+    "name": "Fourierrr",
+    "score": 329
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Shagrat",
+    "score": 195
+   }
+  ]
+ },
+ {
+  "number": 11,
+  "date": "2024-12-08",
+  "challengeId": "gods1_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 341
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Himmelstosh",
+    "score": 257
+   }
+  ]
+ },
+ {
+  "number": 12,
+  "date": "2024-12-16",
+  "challengeId": "fate2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 226
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 205
+   }
+  ]
+ },
+ {
+  "number": 13,
+  "date": "2024-12-23",
+  "challengeId": "mix2_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 377
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Himmelstosh",
+    "score": 332
+   }
+  ]
+ },
+ {
+  "number": 14,
+  "date": "2024-12-30",
+  "challengeId": "cheap2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 438
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 375
+   }
+  ]
+ },
+ {
+  "number": 15,
+  "date": "2025-01-06",
+  "challengeId": "immortals2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 691
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "jskunsa",
+    "score": 502
+   }
+  ]
+ },
+ {
+  "number": 16,
+  "date": "2025-01-20",
+  "challengeId": "time_traveller2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 317
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "jskunsa",
+    "score": 285
+   }
+  ]
+ },
+ {
+  "number": 17,
+  "date": "2025-02-03",
+  "challengeId": "gods2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 282
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Jorrig",
+    "score": 82
+   }
+  ]
+ },
+ {
+  "number": 18,
+  "date": "2025-02-10",
+  "challengeId": "kidnappers2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 377
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Fourierrr",
+    "score": 270
+   }
+  ]
+ },
+ {
+  "number": 19,
+  "date": "2025-02-24",
+  "challengeId": "epic2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 431
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Olesch",
+    "score": 96
+   }
+  ]
+ },
+ {
+  "number": 20,
+  "date": "2025-03-03",
+  "challengeId": "impact2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 498
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "jhutc",
+    "score": 222
+   }
+  ]
+ },
+ {
+  "number": 21,
+  "date": "2025-03-10",
+  "challengeId": "2ai_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 397
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Barboucha",
+    "score": 250
+   }
+  ]
+ },
+ {
+  "number": 22,
+  "date": "2025-03-17",
+  "challengeId": "wonders2_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 302
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "elo8000",
+    "score": 226
+   }
+  ]
+ },
+ {
+  "number": 23,
+  "date": "2025-03-24",
+  "challengeId": "impact3_mix",
+  "winners": [
+   {
+    "name": "Barboucha",
+    "score": 594
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Himmelstosh",
+    "score": 461
+   }
+  ]
+ },
+ {
+  "number": 24,
+  "date": "2025-03-31",
+  "challengeId": "kidnappers3_mix",
+  "winners": [
+   {
+    "name": "Allfather",
+    "score": 330
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Himmelstosh",
+    "score": 277
+   }
+  ]
+ },
+ {
+  "number": 25,
+  "date": "2025-04-07",
+  "challengeId": "immortals3_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 298
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "mbbchess",
+    "score": 293
+   }
+  ]
+ },
+ {
+  "number": 26,
+  "date": "2025-04-14",
+  "challengeId": "fate3_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 292
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 267
+   }
+  ]
+ },
+ {
+  "number": 27,
+  "date": "2025-04-28",
+  "challengeId": "mix3_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 780
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 573
+   }
+  ]
+ },
+ {
+  "number": 28,
+  "date": "2025-05-05",
+  "challengeId": "3ai_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 458
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Ithil",
+    "score": 32
+   }
+  ]
+ },
+ {
+  "number": 29,
+  "date": "2025-05-12",
+  "challengeId": "epic3_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 545
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Barboucha",
+    "score": 208
+   }
+  ]
+ },
+ {
+  "number": 30,
+  "date": "2025-05-26",
+  "challengeId": "wonders3_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 510
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 398
+   }
+  ]
+ },
+ {
+  "number": 31,
+  "date": "2025-06-02",
+  "challengeId": "gods3_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 135
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Fourierrr",
+    "score": 113
+   }
+  ]
+ },
+ {
+  "number": 32,
+  "date": "2025-06-09",
+  "challengeId": "cheap3_mix",
+  "winners": [
+   {
+    "name": "Himmelstosh",
+    "score": 382
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 371
+   }
+  ]
+ },
+ {
+  "number": 33,
+  "date": "2025-06-16",
+  "challengeId": "time_traveller3_mix",
+  "winners": [
+   {
+    "name": "jhutc",
+    "score": 219
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 137
+   }
+  ]
+ },
+ {
+  "number": 34,
+  "date": "2025-06-30",
+  "challengeId": "epic4_mix",
+  "winners": [
+   {
+    "name": "Allfather",
+    "score": 462
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Barboucha",
+    "score": 424
+   }
+  ]
+ },
+ {
+  "number": 35,
+  "date": "2025-07-14",
+  "challengeId": "time_travellers_mix",
+  "winners": [
+   {
+    "name": "jhutc",
+    "score": 138
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "Ruudi",
+    "score": 127
+   }
+  ]
+ },
+ {
+  "number": 36,
+  "date": "2025-07-28",
+  "challengeId": "mix4_mix",
+  "winners": [
+   {
+    "name": "Lemmingsplayer",
+    "score": 175
+   }
+  ],
+  "runnersUp": [
+   {
+    "name": "artacker",
+    "score": 49
+   }
+  ]
+ }
+]

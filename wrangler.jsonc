@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tta-challenges",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tta-challenges",
+      // Replace with the id printed by `npx wrangler d1 create tta-challenges`.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    // Proof links must point to a message in this Discord server.
+    "DISCORD_GUILD_ID": "358698681672925195",
+    // Optional Cloudflare Turnstile site key; leave empty to disable the captcha.
+    "TURNSTILE_SITE_KEY": ""
+  }
+  // Secrets (set with `npx wrangler secret put <NAME>`):
+  //   ADMIN_TOKEN       password for the /admin page
+  //   TURNSTILE_SECRET  only if TURNSTILE_SITE_KEY is set
+}
