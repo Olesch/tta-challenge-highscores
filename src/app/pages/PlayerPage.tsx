@@ -23,13 +23,13 @@ export function PlayerPage({ name }: { name: string }) {
         <h1>{name}</h1>
         {known && verifiedOnly ? (
           <p>
-            {name} has no verified scores yet.{" "}
+            {name} has no verified entries yet.{" "}
             <button class="link" onClick={() => setVerifiedOnly(false)}>
-              Show all scores
+              Show all entries
             </button>
           </p>
         ) : (
-          <p class="muted">No scores for this player.</p>
+          <p class="muted">No entries for this player.</p>
         )}
       </>
     );
@@ -48,7 +48,7 @@ export function PlayerPage({ name }: { name: string }) {
         <Stat label="Records held" value={player.records} />
         <Stat label="Challenges played" value={`${player.played} / ${CHALLENGES.length}`} />
         <Stat label="Verified" value={player.verified} />
-        <Stat label="Total score" value={player.total} />
+        <Stat label="Total domination" value={player.total} />
       </div>
       <p>
         <Link class="button" href={`/compare?a=${encodeURIComponent(player.name)}`}>

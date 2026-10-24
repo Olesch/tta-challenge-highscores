@@ -53,7 +53,7 @@ export function ChallengePage({ id }: { id: string }) {
       {!stats ? (
         <Loading error={error} />
       ) : board.length === 0 ? (
-        <p class="muted">No {verifiedOnly ? "verified " : ""}scores yet.</p>
+        <p class="muted">No {verifiedOnly ? "verified " : ""}entries yet.</p>
       ) : (
         <div class="table-wrap">
           <table>
@@ -61,7 +61,9 @@ export function ChallengePage({ id }: { id: string }) {
               <tr>
                 <th class="num">#</th>
                 <th>Player</th>
-                <th class="num">Score</th>
+                <th class="num" title="Your final score minus the second-place player's score">
+                  Domination
+                </th>
                 <th>Proof</th>
                 <th>Date</th>
               </tr>

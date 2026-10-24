@@ -62,8 +62,8 @@ export function Compare() {
         </label>
       </div>
 
-      {a && !pa && <p class="muted">No {verifiedOnly ? "verified " : ""}scores for “{a}”.</p>}
-      {b && !pb && <p class="muted">No {verifiedOnly ? "verified " : ""}scores for “{b}”.</p>}
+      {a && !pa && <p class="muted">No {verifiedOnly ? "verified " : ""}entries for “{a}”.</p>}
+      {b && !pb && <p class="muted">No {verifiedOnly ? "verified " : ""}entries for “{b}”.</p>}
 
       {pa && pb && (
         <>

@@ -20,8 +20,8 @@ export function validateName(name: string): string | null {
 }
 
 export function validateScore(score: number): string | null {
-  if (!Number.isInteger(score)) return "Score must be a whole number.";
-  if (score < MIN_SCORE || score > MAX_SCORE) return `Score must be between ${MIN_SCORE} and ${MAX_SCORE}.`;
+  if (!Number.isInteger(score)) return "Domination must be a whole number.";
+  if (score < MIN_SCORE || score > MAX_SCORE) return `Domination must be between ${MIN_SCORE} and ${MAX_SCORE}.`;
   return null;
 }
 

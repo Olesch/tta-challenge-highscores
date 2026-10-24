@@ -48,7 +48,7 @@ export function Players() {
         <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
       </div>
       <p class="lead">
-        Totals add up each player's best score per challenge. Click a column to sort.
+        Totals add up each player's best domination per challenge. Click a column to sort.
       </p>
       <input
         class="search"

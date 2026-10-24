@@ -2,9 +2,9 @@
 
 Scoreboard for the challenges of the *Through the Ages* app. Replaces the Google Sheet + Form.
 
-- Anyone can submit scores, no accounts. A score with a Discord message link (from the TtA server) counts as **verified**;
-  without one it is saved but only shown under "All scores".
-- Anyone can download all scores as CSV or JSON (footer of every page).
+- Anyone can submit their domination (final score minus the second-place score), no accounts. An entry with a Discord message link (from the TtA server) counts as **verified**;
+  without one it is saved but only shown under "All entries".
+- Anyone can download all entries as CSV or JSON (footer of every page).
 - Pages: highscores (with pooled and best-single-player totals), challenge rankings, players, player profile,
   compare two players, submit, weekly-challenge winners (history), admin.
 

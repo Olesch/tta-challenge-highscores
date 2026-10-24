@@ -1,7 +1,7 @@
 import { CHALLENGE_BY_ID, GROUP_LABELS, SETS } from "../shared/challenges";
 import { loadEntries } from "./data";
 
-const COLUMNS = ["id", "date", "player", "set", "group", "challenge_id", "challenge", "players", "score", "verified", "proof_url"];
+const COLUMNS = ["id", "date", "player", "set", "group", "challenge_id", "challenge", "players", "domination", "verified", "proof_url"];
 
 async function rows() {
   const entries = await loadEntries(true);
@@ -16,7 +16,7 @@ async function rows() {
       challenge_id: c.id,
       challenge: c.name,
       players: c.players,
-      score: e.s,
+      domination: e.s,
       verified: e.u ? "yes" : "no",
       proof_url: e.u ?? "",
     };
@@ -32,12 +32,12 @@ function save(content: string, type: string, ext: string) {
   const url = URL.createObjectURL(new Blob([content], { type }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = `tta-challenge-scores-${new Date().toISOString().slice(0, 10)}.${ext}`;
+  a.download = `tta-challenge-dominations-${new Date().toISOString().slice(0, 10)}.${ext}`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/** Every visible entry, one row per submitted score. */
+/** Every visible entry, one row per submitted domination. */
 export async function downloadAll(format: "csv" | "json") {
   const data = await rows();
   if (format === "json") return save(JSON.stringify(data, null, 1), "application/json", "json");

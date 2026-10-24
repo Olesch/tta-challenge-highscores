@@ -105,7 +105,7 @@ export function Submit() {
       }
       setRows({});
       setSharedProof("");
-      setStatus({ kind: "ok", text: `Saved ${data.count} score${data.count === 1 ? "" : "s"}.` });
+      setStatus({ kind: "ok", text: `Saved ${data.count} ${data.count === 1 ? "entry" : "entries"}.` });
       await loadEntries(true);
     } catch (err) {
       setStatus({ kind: "error", text: (err as Error).message });
@@ -121,16 +121,16 @@ export function Submit() {
 
   return (
     <>
-      <h1>Submit scores</h1>
+      <h1>Submit domination</h1>
       <div class="help">
         <p>
-          Enter your <strong>domination</strong> score for any challenges you like. You only need to fill in the ones you
-          want to add or improve.
+          Enter your <strong>domination</strong> for any challenges you like: your final score minus the score of the
+          second-place player. You only need to fill in the ones you want to add or improve.
         </p>
         <p>
-          <strong>To get a score verified:</strong> post a screenshot of the result in the TtA Discord challenge channel,
-          then right-click the message → <em>Copy Message Link</em> and paste it below. Scores without a link are saved
-          and show up under “All scores”, but not in the official highscores.
+          <strong>To get an entry verified:</strong> post a screenshot of the result in the TtA Discord challenge channel,
+          then right-click the message → <em>Copy Message Link</em> and paste it below. Entries without a link are saved
+          and show up under “All entries”, but not in the official highscores.
         </p>
       </div>
 
@@ -145,7 +145,7 @@ export function Submit() {
       </div>
 
       <div class="form-row">
-        <label for="shared-proof">Discord link for all scores below (optional)</label>
+        <label for="shared-proof">Discord link for all entries below (optional)</label>
         <input
           id="shared-proof"
           type="url"
@@ -153,7 +153,7 @@ export function Submit() {
           value={sharedProof}
           onInput={(e) => setSharedProof((e.target as HTMLInputElement).value)}
         />
-        <span class="muted">Used for every score that doesn't have its own link.</span>
+        <span class="muted">Used for every entry that doesn't have its own link.</span>
       </div>
 
       <Tabs
@@ -188,8 +188,8 @@ export function Submit() {
                     inputMode="numeric"
                     min={0}
                     step={1}
-                    placeholder="Score"
-                    aria-label={`${c.name} score`}
+                    placeholder="Domination"
+                    aria-label={`${c.name} domination`}
                     value={row.score}
                     onInput={(e) => setRow(c.id, { score: (e.target as HTMLInputElement).value })}
                   />
@@ -212,8 +212,8 @@ export function Submit() {
       <div class="submit-bar">
         <div>
           {filled.length === 0
-            ? "No scores entered yet."
-            : `${filled.length} score${filled.length === 1 ? "" : "s"} · ${verifiedCount} with proof`}
+            ? "Nothing entered yet."
+            : `${filled.length} ${filled.length === 1 ? "entry" : "entries"} · ${verifiedCount} with proof`}
           {errors.length > 0 && (
             <ul class="error">
               {errors.slice(0, 5).map((e) => (

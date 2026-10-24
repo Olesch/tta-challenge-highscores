@@ -47,12 +47,12 @@ export function ScoreHolder({ best }: { best: Best | undefined }) {
 
 export function VerifiedToggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div class="segmented" role="group" aria-label="Which scores to count">
+    <div class="segmented" role="group" aria-label="Which entries to count">
       <button class={value ? "active" : ""} onClick={() => onChange(true)}>
         Verified only
       </button>
       <button class={!value ? "active" : ""} onClick={() => onChange(false)}>
-        All scores
+        All entries
       </button>
     </div>
   );
@@ -88,7 +88,7 @@ export function Stat({ label, value }: { label: string; value: ComponentChildren
 }
 
 export function Loading({ error }: { error?: string | null }) {
-  return <p class={error ? "error" : "muted"}>{error ?? "Loading scores…"}</p>;
+  return <p class={error ? "error" : "muted"}>{error ?? "Loading…"}</p>;
 }
 
 export function PlayerPicker({

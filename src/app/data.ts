@@ -137,7 +137,7 @@ let entriesPromise: Promise<Entry[]> | null = null;
 export function loadEntries(force = false): Promise<Entry[]> {
   if (!entriesPromise || force) {
     entriesPromise = fetch("/api/entries", force ? { cache: "reload" } : undefined).then((r) => {
-      if (!r.ok) throw new Error(`Could not load scores (${r.status})`);
+      if (!r.ok) throw new Error(`Could not load the leaderboard (${r.status})`);
       return r.json();
     });
     entriesPromise.catch(() => (entriesPromise = null));
@@ -160,7 +160,7 @@ export function loadConfig(): Promise<Config> {
   return configPromise;
 }
 
-/** Remembered toggle between "verified only" and "all scores". */
+/** Remembered toggle between "verified only" and "all entries". */
 export function useVerifiedOnly(): [boolean, (v: boolean) => void] {
   const [value, setValue] = useState(() => {
     try {

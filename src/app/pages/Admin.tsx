@@ -154,7 +154,7 @@ export function Admin() {
                 <th>Date</th>
                 <th>Player</th>
                 <th>Challenge</th>
-                <th class="num">Score</th>
+                <th class="num">Domination</th>
                 <th>Proof</th>
                 <th>Source</th>
                 <th />
@@ -174,9 +174,9 @@ export function Admin() {
                     <td class="num">
                       <button
                         class="link"
-                        title="Edit score"
+                        title="Edit domination"
                         onClick={() => {
-                          const v = prompt("New score", String(e.s));
+                          const v = prompt("New domination", String(e.s));
                           if (v !== null) act(() => api(`entries/${e.id}`, { method: "PATCH", body: JSON.stringify({ score: Number(v) }) }));
                         }}
                       >

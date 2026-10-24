@@ -25,7 +25,7 @@ function resolve(path: string): { title: string; page: preact.JSX.Element } {
   if (path === "/") return { title: "Highscores", page: <Highscores /> };
   if (path === "/players") return { title: "Players", page: <Players /> };
   if (path === "/compare") return { title: "Compare", page: <Compare /> };
-  if (path === "/submit") return { title: "Submit scores", page: <Submit /> };
+  if (path === "/submit") return { title: "Submit domination", page: <Submit /> };
   if (path === "/weekly") return { title: "Weekly winners", page: <Weekly /> };
   if (path === "/admin") return { title: "Admin", page: <Admin /> };
   if ((m = path.match(/^\/player\/(.+)$/))) {
@@ -59,14 +59,14 @@ function App() {
             </Link>
           ))}
           <Link href="/submit" class={`submit-link ${url.pathname === "/submit" ? "active" : ""}`}>
-            Submit scores
+            Submit domination
           </Link>
         </nav>
       </header>
       <main>{page}</main>
       <footer class="site-footer">
         <p>
-          Fan-made scoreboard for the challenges of <em>Through the Ages</em> (CGE Digital). Works on trust — verified scores
+          Fan-made leaderboard for the challenges of <em>Through the Ages</em> (CGE Digital). Works on trust — verified entries
           link to a Discord post. Discussion happens on the TtA Discord.
         </p>
         <p class="download">

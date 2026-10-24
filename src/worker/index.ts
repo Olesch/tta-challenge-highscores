@@ -83,8 +83,8 @@ async function submit(request: Request, env: Env): Promise<Response> {
   if (nameError) throw new HttpError(400, nameError);
   const player = cleanName(body.player);
 
-  if (!Array.isArray(body.scores) || body.scores.length === 0) throw new HttpError(400, "Enter at least one score.");
-  if (body.scores.length > CHALLENGE_BY_ID.size) throw new HttpError(400, "Too many scores.");
+  if (!Array.isArray(body.scores) || body.scores.length === 0) throw new HttpError(400, "Enter at least one domination.");
+  if (body.scores.length > CHALLENGE_BY_ID.size) throw new HttpError(400, "Too many entries.");
 
   const seen = new Set<string>();
   const rows = body.scores.map((s) => {

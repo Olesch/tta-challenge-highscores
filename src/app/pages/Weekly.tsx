@@ -42,7 +42,7 @@ export function Weekly() {
     <>
       <h1>Weekly Challenge winners</h1>
       <p class="lead">
-        From September 2024 to July 2025, a Random Mix challenge was featured every week, and the best verified score by
+        From September 2024 to July 2025, a Random Mix challenge was featured every week, and the best verified domination by
         Sunday 15:00 (European time) won. The event has ended; here are its champions, for old times' sake.
       </p>
 

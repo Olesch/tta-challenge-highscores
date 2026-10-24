@@ -22,7 +22,7 @@ function TotalsLine({ total }: { total: ScopeTotal }) {
         {total.covered < total.size && <span class="muted"> ({total.covered}/{total.size})</span>}
       </span>
       {best && (
-        <span title="Highest sum of one player's own best scores in this scope">
+        <span title="Highest sum of one player's own best dominations in this scope">
           Best player <strong>{best.total}</strong> <PlayerLink name={best.name} />
         </span>
       )}
@@ -61,10 +61,11 @@ export function Highscores() {
         <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
       </div>
       <p class="lead">
+        Domination is your final score minus the score of the second-place player.{" "}
         {verifiedOnly
-          ? "Official records: only scores with a linked Discord proof count."
-          : "All submitted scores, including ones without proof."}{" "}
-        <Link href="/submit">Submit your scores →</Link>
+          ? "Official records: only entries with a linked Discord proof count."
+          : "All submitted entries, including ones without proof."}{" "}
+        <Link href="/submit">Submit your domination →</Link>
       </p>
 
       <div class="toolbar">
@@ -109,7 +110,7 @@ export function Highscores() {
         <h2>Totals</h2>
         <p class="lead">
           <strong>Pooled</strong> adds up the record of every challenge, as if all players formed one team.{" "}
-          <strong>Best single player</strong> is the highest sum of one player's own best scores.
+          <strong>Best single player</strong> is the highest sum of one player's own best dominations.
         </p>
         <div class="table-wrap">
           <table>
