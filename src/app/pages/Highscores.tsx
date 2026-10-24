@@ -3,12 +3,27 @@ import { CHALLENGES, GROUP_LABELS, SETS, type SetId, groupsOf } from "../../shar
 import { ChallengeImage, Difficulty, Loading, PlayerLink, ScoreHolder, Tabs, VerifiedToggle } from "../components";
 import { type ScopeTotal, computeStats, scopeTotal, useEntries, useVerifiedOnly } from "../data";
 import { Link, challengeHref } from "../router";
+import { SetGrid } from "../SetGrid";
 
 function readSet(): SetId {
   try {
     return (sessionStorage.getItem("set") as SetId) || "original";
   } catch {
     return "original";
+  }
+}
+
+type View = "cards" | "compact";
+const VIEWS: { id: View; label: string }[] = [
+  { id: "cards", label: "Cards" },
+  { id: "compact", label: "Compact" },
+];
+
+function readView(): View {
+  try {
+    return localStorage.getItem("highscoreView") === "compact" ? "compact" : "cards";
+  } catch {
+    return "cards";
   }
 }
 
@@ -35,6 +50,16 @@ export function Highscores() {
   const [verifiedOnly, setVerifiedOnly] = useVerifiedOnly();
   const [set, setSet] = useState<SetId>(readSet);
   const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
+
+  const [view, setView] = useState<View>(readView);
+  const chooseView = (v: View) => {
+    setView(v);
+    try {
+      localStorage.setItem("highscoreView", v);
+    } catch {
+      /* storage unavailable */
+    }
+  };
 
   const chooseSet = (s: SetId) => {
     setSet(s);
@@ -70,10 +95,38 @@ export function Highscores() {
 
       <div class="toolbar">
         <Tabs value={set} options={SETS} onChange={chooseSet} />
-        <TotalsLine total={scopes[SETS.findIndex((s) => s.id === set)].total} />
+        <Tabs value={view} options={VIEWS} onChange={chooseView} />
       </div>
+      <p class="set-totals">
+        <TotalsLine total={scopes[SETS.findIndex((s) => s.id === set)].total} />
+      </p>
 
-      {groups.map(({ group, challenges }) => (
+      {view === "compact" && (
+        <SetGrid
+          set={set}
+          label={(challenges) => {
+            const total = scopeTotal(stats, challenges);
+            return (
+              <span class="muted" title="Pooled: sum of this group's records">
+                Pooled {total.pooled}
+              </span>
+            );
+          }}
+          cell={(c) => {
+            const board = stats.boards.get(c.id) ?? [];
+            return (
+              <>
+                <ScoreHolder best={board[0]} />
+                <div class="set-grid-sub muted">
+                  {c.players}P · {board.length} players
+                </div>
+              </>
+            );
+          }}
+        />
+      )}
+
+      {view === "cards" && groups.map(({ group, challenges }) => (
         <section class="group" style={{ "--group-bg": `url(/img/groups/${group}.jpg)` }}>
           <div class="group-head">
             <h2 class="group-title">{GROUP_LABELS[group] ?? group}</h2>

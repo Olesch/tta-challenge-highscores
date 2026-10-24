@@ -3,12 +3,24 @@ import { type Challenge, GROUP_LABELS, type SetId, groupsOf } from "../shared/ch
 import { Link, challengeHref } from "./router";
 
 /** Compact grid of a set's challenges in game layout (group rows, slot columns). */
-export function SetGrid({ set, cell }: { set: SetId; cell: (c: Challenge) => ComponentChildren }) {
+export function SetGrid({
+  set,
+  cell,
+  label,
+}: {
+  set: SetId;
+  cell: (c: Challenge) => ComponentChildren;
+  /** Extra content under the group name, e.g. group totals. */
+  label?: (challenges: Challenge[]) => ComponentChildren;
+}) {
   return (
     <div class="set-grid">
       {groupsOf(set).map(({ group, challenges }) => (
         <div class="set-grid-row">
-          <div class="set-grid-label">{GROUP_LABELS[group]}</div>
+          <div class="set-grid-label">
+            {GROUP_LABELS[group]}
+            {label && <div class="set-grid-label-extra">{label(challenges)}</div>}
+          </div>
           {challenges.map((c) => (
             <div class="set-grid-cell">
               <Link class="set-grid-name" href={challengeHref(c.id)} title={c.name}>

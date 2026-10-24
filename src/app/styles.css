@@ -749,3 +749,14 @@ th.num.sortable button {
   padding: 3px 10px;
   font-size: 0.85rem;
 }
+
+.set-totals {
+  margin: -6px 0 14px;
+}
+.set-grid-label-extra {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.78rem;
+}
+.set-grid-sub {
+  font-size: 0.78rem;
+}
