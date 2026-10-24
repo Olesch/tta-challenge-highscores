@@ -744,3 +744,8 @@ th.num.sortable button {
     min-width: 0;
   }
 }
+
+.site-footer .download button {
+  padding: 3px 10px;
+  font-size: 0.85rem;
+}

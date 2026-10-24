@@ -9,6 +9,7 @@ import { PlayerPage } from "./pages/PlayerPage";
 import { Players } from "./pages/Players";
 import { Submit } from "./pages/Submit";
 import { Weekly } from "./pages/Weekly";
+import { downloadAll } from "./download";
 import { Link, useLocation } from "./router";
 import "./styles.css";
 
@@ -64,8 +65,14 @@ function App() {
       </header>
       <main>{page}</main>
       <footer class="site-footer">
-        Fan-made scoreboard for the challenges of <em>Through the Ages</em> (CGE Digital). Works on trust — verified scores link
-        to a Discord post. Discussion happens on the TtA Discord.
+        <p>
+          Fan-made scoreboard for the challenges of <em>Through the Ages</em> (CGE Digital). Works on trust — verified scores
+          link to a Discord post. Discussion happens on the TtA Discord.
+        </p>
+        <p class="download">
+          Download all data: <button onClick={() => downloadAll("csv")}>CSV (Excel)</button>{" "}
+          <button onClick={() => downloadAll("json")}>JSON</button>
+        </p>
       </footer>
     </>
   );

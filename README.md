@@ -4,6 +4,7 @@ Scoreboard for the challenges of the *Through the Ages* app. Replaces the Google
 
 - Anyone can submit scores, no accounts. A score with a Discord message link (from the TtA server) counts as **verified**;
   without one it is saved but only shown under "All scores".
+- Anyone can download all scores as CSV or JSON (footer of every page).
 - Pages: highscores (with pooled and best-single-player totals), challenge rankings, players, player profile,
   compare two players, submit, weekly-challenge winners (history), admin.
 
@@ -39,7 +40,11 @@ npm run deploy
 Optional spam protection: create a Turnstile widget in the Cloudflare dashboard, put its site key in
 `TURNSTILE_SITE_KEY` (wrangler.jsonc) and its secret with `npx wrangler secret put TURNSTILE_SECRET`.
 
-**Only run `db:import:remote` once** (or again on purpose): it replaces every entry that came from the sheet.
+`db:import:remote` replaces every entry that came from the sheet, which undoes admin edits to them.
+It asks you to type a confirmation phrase and saves a backup to `backups/` first.
+
+Backups: `npm run db:backup:remote` saves the live database to `backups/tta-challenges-latest.sql`.
+Restore one with `npx wrangler d1 execute tta-challenges --remote --file=backups/<file>.sql`.
 
 ## Data
 

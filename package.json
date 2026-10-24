@@ -10,7 +10,8 @@
     "db:migrate:local": "wrangler d1 migrations apply tta-challenges --local",
     "db:migrate:remote": "wrangler d1 migrations apply tta-challenges --remote",
     "db:import:local": "wrangler d1 execute tta-challenges --local --file=seed/import.sql",
-    "db:import:remote": "wrangler d1 execute tta-challenges --remote --file=seed/import.sql",
+    "db:import:remote": "node tools/import-remote.mjs",
+    "db:backup:remote": "node -e \"require('fs').mkdirSync('backups',{recursive:true})\" && wrangler d1 export tta-challenges --remote --output=backups/tta-challenges-latest.sql",
     "typecheck": "tsc -b"
   },
   "devDependencies": {
