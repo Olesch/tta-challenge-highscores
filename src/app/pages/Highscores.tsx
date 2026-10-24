@@ -4,6 +4,7 @@ import { ChallengeImage, Difficulty, Loading, PlayerLink, ScoreHolder, Tabs, Ver
 import { type ScopeTotal, computeStats, scopeTotal, useEntries, useVerifiedOnly } from "../data";
 import { Link, challengeHref } from "../router";
 import { SetGrid } from "../SetGrid";
+import { TTA_APP_URL } from "../links";
 
 function readSet(): SetId {
   try {
@@ -82,6 +83,13 @@ export function Highscores() {
   return (
     <>
       <h1>Domination Highscores</h1>
+      <p class="fan-note">
+        A fan project collecting the challenge results of the{" "}
+        <a href={TTA_APP_URL} target="_blank" rel="noopener noreferrer">
+          Through the Ages app
+        </a>
+        . Not affiliated with Czech Games Edition.
+      </p>
       <p class="lead">
         Domination is your final score minus the score of the second-place player.{" "}
         {verifiedOnly

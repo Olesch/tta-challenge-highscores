@@ -808,3 +808,9 @@ th.num.sortable button {
     font-size: 0.85rem;
   }
 }
+
+.fan-note {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}

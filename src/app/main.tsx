@@ -10,7 +10,7 @@ import { Players } from "./pages/Players";
 import { Submit } from "./pages/Submit";
 import { Weekly } from "./pages/Weekly";
 import { downloadAll } from "./download";
-import { DISCORD_CHANNEL_URL } from "./links";
+import { DISCORD_CHANNEL_URL, TTA_APP_URL } from "./links";
 import { Link, useLocation } from "./router";
 import "./styles.css";
 
@@ -84,7 +84,11 @@ function App() {
       <main>{page}</main>
       <footer class="site-footer">
         <p>
-          Fan-made leaderboard for the challenges of <em>Through the Ages</em> (CGE Digital). Works on trust — verified entries
+          Fan-made leaderboard for the challenges of the{" "}
+          <a href={TTA_APP_URL} target="_blank" rel="noopener noreferrer">
+            <em>Through the Ages</em> app
+          </a>{" "}
+          by Czech Games Edition. Works on trust — verified entries
           link to a Discord post. Discussion happens in the{" "}
           <a href={DISCORD_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
             TtA Discord challenge channel
