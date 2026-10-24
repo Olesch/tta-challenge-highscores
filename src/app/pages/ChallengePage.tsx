@@ -46,7 +46,7 @@ export function ChallengePage({ id }: { id: string }) {
         </div>
       </div>
 
-      <div class="page-head">
+      <div class="sticky-bar">
         <h2>Ranking</h2>
         <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
       </div>

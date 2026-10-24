@@ -760,3 +760,51 @@ th.num.sortable button {
 .set-grid-sub {
   font-size: 0.78rem;
 }
+
+/* Switches stay visible while scrolling */
+.sticky-bar {
+  position: sticky;
+  top: var(--header-h, 0px);
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin: 12px -16px;
+  padding: 8px 16px;
+  background: rgba(21, 17, 13, 0.94);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.sticky-bar h2 {
+  margin: 0;
+}
+.sticky-bar .bar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 600px) {
+  .site-header {
+    position: static;
+  }
+  .sticky-bar {
+    gap: 6px;
+    padding: 6px 16px;
+    justify-content: flex-start;
+  }
+  /* Let all switches wrap together so short ones share a row. */
+  .sticky-bar .bar-group {
+    display: contents;
+  }
+  .sticky-bar .bar-note {
+    display: none;
+  }
+  .sticky-bar .segmented button,
+  .sticky-bar .tabs button {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+}

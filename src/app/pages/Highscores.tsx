@@ -81,10 +81,7 @@ export function Highscores() {
 
   return (
     <>
-      <div class="page-head">
-        <h1>Domination Highscores</h1>
-        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
-      </div>
+      <h1>Domination Highscores</h1>
       <p class="lead">
         Domination is your final score minus the score of the second-place player.{" "}
         {verifiedOnly
@@ -93,9 +90,12 @@ export function Highscores() {
         <Link href="/submit">Submit your domination →</Link>
       </p>
 
-      <div class="toolbar">
-        <Tabs value={set} options={SETS} onChange={chooseSet} />
-        <Tabs value={view} options={VIEWS} onChange={chooseView} />
+      <div class="sticky-bar">
+        <div class="bar-group">
+          <Tabs value={set} options={SETS} onChange={chooseSet} />
+          <Tabs value={view} options={VIEWS} onChange={chooseView} />
+        </div>
+        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
       </div>
       <p class="set-totals">
         <TotalsLine total={scopes[SETS.findIndex((s) => s.id === set)].total} />

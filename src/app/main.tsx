@@ -1,5 +1,5 @@
 import { render } from "preact";
-import { useEffect } from "preact/hooks";
+import { useEffect, useRef } from "preact/hooks";
 import { CHALLENGE_BY_ID } from "../shared/challenges";
 import { Admin } from "./pages/Admin";
 import { ChallengePage } from "./pages/ChallengePage";
@@ -10,6 +10,7 @@ import { Players } from "./pages/Players";
 import { Submit } from "./pages/Submit";
 import { Weekly } from "./pages/Weekly";
 import { downloadAll } from "./download";
+import { DISCORD_CHANNEL_URL } from "./links";
 import { Link, useLocation } from "./router";
 import "./styles.css";
 
@@ -46,9 +47,26 @@ function App() {
     document.title = `${title} · TtA Challenges`;
   }, [title]);
 
+  // Sticky switch bars sit just below the header; on phones the header isn't sticky, so they use the top.
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const header = headerRef.current!;
+    const update = () => {
+      const sticky = getComputedStyle(header).position === "sticky";
+      document.documentElement.style.setProperty("--header-h", sticky ? `${header.offsetHeight}px` : "0px");
+    };
+    const observer = new ResizeObserver(update);
+    observer.observe(header);
+    addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      removeEventListener("resize", update);
+    };
+  }, []);
+
   return (
     <>
-      <header class="site-header">
+      <header class="site-header" ref={headerRef}>
         <Link href="/" class="brand">
           <span class="brand-mark">TtA</span> Challenge Highscores
         </Link>
@@ -67,7 +85,11 @@ function App() {
       <footer class="site-footer">
         <p>
           Fan-made leaderboard for the challenges of <em>Through the Ages</em> (CGE Digital). Works on trust — verified entries
-          link to a Discord post. Discussion happens on the TtA Discord.
+          link to a Discord post. Discussion happens in the{" "}
+          <a href={DISCORD_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+            TtA Discord challenge channel
+          </a>
+          .
         </p>
         <p class="download">
           Download all data: <button onClick={() => downloadAll("csv")}>CSV (Excel)</button>{" "}

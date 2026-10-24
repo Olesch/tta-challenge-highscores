@@ -43,20 +43,20 @@ export function Players() {
 
   return (
     <>
-      <div class="page-head">
-        <h1>Players</h1>
-        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
-      </div>
+      <h1>Players</h1>
       <p class="lead">
         Totals add up each player's best domination per challenge. Click a column to sort.
       </p>
-      <input
-        class="search"
-        type="search"
-        placeholder="Search players…"
-        value={query}
-        onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
-      />
+      <div class="sticky-bar">
+        <input
+          class="search"
+          type="search"
+          placeholder="Search players…"
+          value={query}
+          onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
+        />
+        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+      </div>
       <div class="table-wrap">
         <table>
           <thead>

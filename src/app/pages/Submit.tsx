@@ -4,6 +4,7 @@ import { CHALLENGES, GROUP_LABELS, SETS, type SetId, groupsOf } from "../../shar
 import { normalizeProofUrl, playerKey, validateName, validateScore } from "../../shared/validation";
 import { PlayerPicker, Tabs } from "../components";
 import { computeStats, loadConfig, loadEntries, useEntries } from "../data";
+import { DISCORD_CHANNEL_URL } from "../links";
 import { Link, playerHref } from "../router";
 
 interface Row {
@@ -128,7 +129,11 @@ export function Submit() {
           second-place player. You only need to fill in the ones you want to add or improve.
         </p>
         <p>
-          <strong>To get an entry verified:</strong> post a screenshot of the result in the TtA Discord challenge channel,
+          <strong>To get an entry verified:</strong> post a screenshot of the result in the{" "}
+          <a href={DISCORD_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+            TtA Discord challenge channel
+          </a>
+          ,
           then right-click the message → <em>Copy Message Link</em> and paste it below. Entries without a link are saved
           and show up under “All entries”, but not in the official highscores.
         </p>
@@ -156,14 +161,16 @@ export function Submit() {
         <span class="muted">Used for every entry that doesn't have its own link.</span>
       </div>
 
-      <Tabs
-        value={set}
-        options={SETS.map((s) => {
-          const n = filled.filter((c) => c.set === s.id).length;
-          return { id: s.id, label: n ? `${s.label} (${n})` : s.label };
-        })}
-        onChange={setSet}
-      />
+      <div class="sticky-bar">
+        <Tabs
+          value={set}
+          options={SETS.map((s) => {
+            const n = filled.filter((c) => c.set === s.id).length;
+            return { id: s.id, label: n ? `${s.label} (${n})` : s.label };
+          })}
+          onChange={setSet}
+        />
+      </div>
 
       <div class="submit-list">
         {groupsOf(set).map(({ group, challenges }) => (

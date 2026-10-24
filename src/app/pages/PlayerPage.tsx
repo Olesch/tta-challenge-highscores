@@ -40,8 +40,15 @@ export function PlayerPage({ name }: { name: string }) {
 
   return (
     <>
-      <div class="page-head">
-        <h1>{player.name}</h1>
+      <h1>{player.name}</h1>
+      <div class="sticky-bar">
+        <div class="bar-group">
+          <Tabs value={set} options={SETS} onChange={setSet} />
+          <span class="muted">
+            Total <strong>{player.totals[set]}</strong> ·{" "}
+            {CHALLENGES.filter((c) => c.set === set && player.bests.has(c.id)).length} / {setCount(set)} played
+          </span>
+        </div>
         <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
       </div>
       <div class="stats">
@@ -56,13 +63,6 @@ export function PlayerPage({ name }: { name: string }) {
         </Link>
       </p>
 
-      <div class="toolbar">
-        <Tabs value={set} options={SETS} onChange={setSet} />
-        <span class="muted">
-          Total <strong>{player.totals[set]}</strong> · {CHALLENGES.filter((c) => c.set === set && player.bests.has(c.id)).length} /{" "}
-          {setCount(set)} played
-        </span>
-      </div>
       <SetGrid
         set={set}
         cell={(c) => {

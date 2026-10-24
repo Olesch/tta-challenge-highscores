@@ -46,10 +46,7 @@ export function Compare() {
 
   return (
     <>
-      <div class="page-head">
-        <h1>Compare players</h1>
-        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
-      </div>
+      <h1>Compare players</h1>
       <div class="compare-pickers">
         <label>
           <span class="side-a">Player A</span>
@@ -60,6 +57,18 @@ export function Compare() {
           <span class="side-b">Player B</span>
           <PlayerPicker id="cmp-b" value={b} onInput={(v) => update("b", v)} names={names} placeholder="Name…" />
         </label>
+      </div>
+
+      <div class="sticky-bar">
+        <div class="bar-group">
+          {pa && pb && <Tabs value={set} options={SETS} onChange={setSet} />}
+          {pa && pb && (
+            <span class="muted bar-note">
+              <span class="side-a">■</span> {pa.name} ahead · <span class="side-b">■</span> {pb.name} ahead
+            </span>
+          )}
+        </div>
+        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
       </div>
 
       {a && !pa && <p class="muted">No {verifiedOnly ? "verified " : ""}entries for “{a}”.</p>}
@@ -117,12 +126,7 @@ export function Compare() {
             </table>
           </div>
 
-          <div class="toolbar">
-            <Tabs value={set} options={SETS} onChange={setSet} />
-            <span class="muted">
-              <span class="side-a">■</span> {pa.name} ahead · <span class="side-b">■</span> {pb.name} ahead
-            </span>
-          </div>
+          <h2>Per challenge</h2>
           <SetGrid
             set={set}
             cell={(c) => {
