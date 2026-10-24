@@ -181,5 +181,6 @@ export function useVerifiedOnly(): [boolean, (v: boolean) => void] {
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  // Fixed English locale: the site is English-only, whatever the visitor's browser language.
+  return new Date(iso).toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" });
 }
