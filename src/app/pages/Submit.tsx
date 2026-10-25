@@ -123,13 +123,36 @@ export function Submit() {
   return (
     <>
       <h1>Submit domination</h1>
+      <section class="examples">
+        <h2>What to post in Discord</h2>
+        <p class="muted">For a verified entry, post these two screenshots of your game. Click to enlarge.</p>
+        <div class="example-grid">
+          <figure>
+            <a href="/img/examples/result.jpg" target="_blank" rel="noopener">
+              <img src="/img/examples/result.jpg" alt="Example: challenge results screen" width={1375} height={822} />
+            </a>
+            <figcaption>
+              <strong>1. Challenge results</strong> — the final scores, with your own civilization in the background.
+              Domination in this example: 374 − 293 = <strong>81</strong>.
+            </figcaption>
+          </figure>
+          <figure>
+            <a href="/img/examples/stats.jpg" target="_blank" rel="noopener">
+              <img src="/img/examples/stats.jpg" alt="Example: culture statistics with leaders and wonders" width={1373} height={866} />
+            </a>
+            <figcaption>
+              <strong>2. Statistics</strong> — the culture graph together with the leaders and wonders of every player.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
       <div class="help">
         <p>
           Enter your <strong>domination</strong> for any challenges you like: your final score minus the score of the
           second-place player. You only need to fill in the ones you want to add or improve.
         </p>
         <p>
-          <strong>To get an entry verified:</strong> post a screenshot of the result in the{" "}
+          <strong>To get an entry verified:</strong> post both screenshots in the{" "}
           <a href={DISCORD_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
             TtA Discord challenge channel
           </a>

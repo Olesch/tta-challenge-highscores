@@ -4,3 +4,6 @@ dist/
 .dev.vars
 *.tsbuildinfo
 backups/
+
+# Original example screenshots (web copies live in public/img/examples)
+/Screen*.png

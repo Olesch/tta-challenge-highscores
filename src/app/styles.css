@@ -814,3 +814,38 @@ th.num.sortable button {
   font-size: 0.9rem;
   color: var(--muted);
 }
+
+/* Example proof screenshots on the submit page */
+.examples h2 {
+  margin-top: 0.4em;
+}
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.example-grid figure {
+  margin: 0;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.example-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.example-grid a:hover img {
+  filter: brightness(1.08);
+}
+.example-grid figcaption {
+  padding: 8px 12px 10px;
+  font-size: 0.9rem;
+}
+@media (max-width: 700px) {
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
+}
