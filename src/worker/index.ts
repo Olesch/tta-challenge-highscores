@@ -130,7 +130,14 @@ async function submit(request: Request, env: Env): Promise<Response> {
   const insert = env.DB.prepare(
     `INSERT INTO entries (challenge_id, player, player_key, score, proof_url, ip_hash) VALUES (?, ?, ?, ?, ?, ?)`,
   );
-  await env.DB.batch(rows.map((r) => insert.bind(r.challengeId, player, playerKey(player), r.score, r.proof, ipHash)));
+  // The IP hash is only needed for the hourly rate limit; forget it after 30 days (see the privacy page).
+  const forgetOldIps = env.DB.prepare(
+    `UPDATE entries SET ip_hash = NULL WHERE ip_hash IS NOT NULL AND created_at < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-30 days')`,
+  );
+  await env.DB.batch([
+    ...rows.map((r) => insert.bind(r.challengeId, player, playerKey(player), r.score, r.proof, ipHash)),
+    forgetOldIps,
+  ]);
   entriesCache = null;
   return json({ ok: true, count: rows.length }, 201);
 }

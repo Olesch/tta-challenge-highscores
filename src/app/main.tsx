@@ -1,3 +1,8 @@
+import "@fontsource/cinzel/600.css";
+import "@fontsource/cinzel/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
 import { render } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import { CHALLENGE_BY_ID } from "../shared/challenges";
