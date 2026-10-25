@@ -1026,3 +1026,30 @@ select {
 .admin-table tr.unchecked-row td:first-child {
   box-shadow: inset 3px 0 0 var(--side-b);
 }
+
+/* Impressum and privacy policy */
+.legal {
+  max-width: 720px;
+}
+.legal h2 {
+  font-size: 1.1rem;
+  margin-top: 1.6em;
+}
+.legal mark.placeholder {
+  background: #5a3a1c;
+  color: var(--gold-strong);
+  padding: 0 4px;
+  border-radius: 3px;
+}
+.legal-links {
+  font-size: 0.9rem;
+}
+
+/* Player page: "as if verified" view */
+.what-if {
+  margin: 8px 0 12px;
+  padding: 8px 12px;
+  border: 1px dashed var(--side-b);
+  border-radius: var(--radius);
+  color: var(--text);
+}
