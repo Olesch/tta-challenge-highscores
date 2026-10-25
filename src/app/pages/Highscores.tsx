@@ -26,9 +26,9 @@ import { TTA_APP_URL } from "../links";
 
 function readSet(): SetId {
   try {
-    return (sessionStorage.getItem("set") as SetId) || "original";
+    return (sessionStorage.getItem("set") as SetId) || "mix";
   } catch {
-    return "original";
+    return "mix";
   }
 }
 

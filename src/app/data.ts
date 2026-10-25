@@ -206,9 +206,9 @@ export type Measure = "rating" | "total";
 export function useMeasure(): [Measure, (m: Measure) => void] {
   const [value, setValue] = useState<Measure>(() => {
     try {
-      return localStorage.getItem("measure") === "total" ? "total" : "rating";
+      return localStorage.getItem("measure") === "rating" ? "rating" : "total";
     } catch {
-      return "rating";
+      return "total";
     }
   });
   const set = (m: Measure) => {

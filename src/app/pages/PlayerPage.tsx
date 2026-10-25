@@ -19,7 +19,7 @@ import { SetGrid } from "../SetGrid";
 export function PlayerPage({ name }: { name: string }) {
   const { entries, error } = useEntries();
   const [verifiedOnly, setVerifiedOnly] = useVerifiedOnly();
-  const [set, setSet] = useState<SetId>("original");
+  const [set, setSet] = useState<SetId>("mix");
   const [measure, setMeasure] = useMeasure();
   const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
 

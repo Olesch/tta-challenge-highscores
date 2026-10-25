@@ -31,7 +31,7 @@ export function Submit() {
       return "";
     }
   });
-  const [set, setSet] = useState<SetId>("original");
+  const [set, setSet] = useState<SetId>("mix");
   const [rows, setRows] = useState<Record<string, Row>>({});
   const [sharedProof, setSharedProof] = useState("");
   const [guildId, setGuildId] = useState("");

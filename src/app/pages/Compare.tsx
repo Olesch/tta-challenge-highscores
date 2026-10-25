@@ -14,7 +14,7 @@ export function Compare() {
   const [verifiedOnly, setVerifiedOnly] = useVerifiedOnly();
   const [a, setA] = useState(() => readParam("a"));
   const [b, setB] = useState(() => readParam("b"));
-  const [set, setSet] = useState<SetId>("original");
+  const [set, setSet] = useState<SetId>("mix");
   const [measure, setMeasure] = useMeasure();
   const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
 
