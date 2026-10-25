@@ -81,7 +81,7 @@ function App() {
           </Link>
         </nav>
       </header>
-      <main>{page}</main>
+      <main class={url.pathname === "/admin" ? "wide" : ""}>{page}</main>
       <footer class="site-footer">
         <p>
           Fan-made leaderboard for the challenges of the{" "}

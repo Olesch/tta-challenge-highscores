@@ -32,6 +32,8 @@ export interface AdminEntry extends Entry {
   hiddenReason: string | null;
   source: string;
   ipHash: string | null;
+  /** An admin has looked at the Discord proof (admin-only, never public). */
+  checked: boolean;
 }
 
 export interface Config {

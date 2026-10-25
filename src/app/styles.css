@@ -984,3 +984,29 @@ h3.subhead {
   display: flex;
   gap: 8px;
 }
+
+/* Admin */
+main.wide {
+  max-width: none;
+}
+select {
+  font: inherit;
+  color: inherit;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+.check-cell {
+  margin-top: 4px;
+}
+.admin-table tr.unchecked-row td:first-child {
+  box-shadow: inset 3px 0 0 var(--side-b);
+}

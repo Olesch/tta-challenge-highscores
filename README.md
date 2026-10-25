@@ -72,5 +72,6 @@ npx wrangler secret put ADMIN_TOKEN
 ```
 
 Run it again to change it. Keep the password in your password manager. Then open `/admin` and enter it.
-You can hide entries (cheats, mistakes), mark entries as bug, edit a domination or proof link, merge two player
+You can mark verified entries as checked once you have looked at their Discord proof (private, reset when the
+proof link changes), hide entries (cheats, mistakes), mark entries as bug, edit a domination or proof link, merge two player
 names, and filter for flagged entries (unproven scores over 2× everyone else's best, proof links used by two players).
