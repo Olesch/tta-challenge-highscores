@@ -132,7 +132,7 @@ export function Submit() {
       <h1>Submit domination</h1>
       <section class="examples">
         <h2>What to post in Discord</h2>
-        <p class="muted">For a verified entry, post these two screenshots of your game. Click to enlarge.</p>
+        <p class="muted">For a verified entry, post at least these two screenshots of your game. Click to enlarge.</p>
         <div class="example-grid">
           <figure>
             <a href="/img/examples/result.jpg" target="_blank" rel="noopener">
@@ -156,6 +156,14 @@ export function Submit() {
               <strong>2. Statistics</strong> — the culture graph together with the leaders and wonders of every player.
             </figcaption>
           </figure>
+          <figure>
+            <div class="example-more" aria-hidden="true">
+              ?
+            </div>
+            <figcaption>
+              <strong>3. Anything else</strong> — feel free to post even more interesting images.
+            </figcaption>
+          </figure>
         </div>
       </section>
       <div class="help">
@@ -175,7 +183,7 @@ export function Submit() {
 
       <div class="form-row">
         <label for="player">Your TtA username</label>
-        <PlayerPicker id="player" value={name} onInput={setName} names={names} placeholder="e.g. Himmelstosh" />
+        <PlayerPicker id="player" value={name} onInput={setName} names={names} />
         {me && (
           <span class="muted">
             Known player · {me.played} challenges · <Link href={playerHref(me.name)}>profile</Link>
@@ -184,7 +192,7 @@ export function Submit() {
       </div>
 
       <div class="form-row">
-        <label for="shared-proof">Discord link for all entries below (optional)</label>
+        <label for="shared-proof">Discord link for all entries below (optional, for verification)</label>
         <input
           id="shared-proof"
           type="url"
@@ -248,7 +256,7 @@ export function Submit() {
                       <input
                         class="proof-input"
                         type="url"
-                        placeholder={sharedProof ? "uses link above" : "Discord link (optional)"}
+                        placeholder={sharedProof ? "uses link above" : "Discord link (optional, for verification)"}
                         aria-label={`${c.name} proof link`}
                         value={row.proof}
                         onInput={(e) => setRow(c.id, { proof: (e.target as HTMLInputElement).value })}

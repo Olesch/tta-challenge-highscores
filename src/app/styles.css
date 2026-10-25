@@ -821,9 +821,20 @@ th.num.sortable button {
 }
 .example-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 16px;
+}
+.example-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1375 / 822;
+  font-size: 6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gold);
+  background: var(--bg-sunken);
 }
 .example-grid figure {
   margin: 0;
