@@ -10,8 +10,8 @@ import { countedScore, playerKey } from "../shared/validation";
 interface Preview {
   title: string;
   description: string;
-  image: string;
-  largeImage: boolean;
+  /** Small thumbnail; only challenges have one (the big faded backgrounds added nothing). */
+  image: string | null;
 }
 
 const SITE = "TtA Challenge Highscores";
@@ -48,7 +48,6 @@ function challengePreview(id: string, entries: Entry[], origin: string): Preview
     title: `${c.name} (${set})`,
     description: `${record} · ${players} verified ${players === 1 ? "player" : "players"} · ${c.players} players, difficulty ${c.difficulty}/6. ${c.rules[c.rules.length - 1] ?? ""}`,
     image: `${origin}/img/challenges/${c.id}.jpg`,
-    largeImage: false,
   };
 }
 
@@ -77,8 +76,7 @@ function playerPreview(name: string, entries: Entry[], origin: string): Preview 
       played > 0
         ? `Rating ${rating}% · ${records} ${records === 1 ? "record" : "records"} · ${played}/${CHALLENGES.length} challenges verified`
         : `${own.length} entries, none verified yet`,
-    image: `${origin}/img/groups/epic.jpg`,
-    largeImage: true,
+    image: null,
   };
 }
 
@@ -87,8 +85,7 @@ function homePreview(entries: Entry[], origin: string): Preview {
   return {
     title: "Domination Highscores",
     description: `Fan-made leaderboard for the ${CHALLENGES.length} challenges of the Through the Ages app: ${players} players, ${entries.length} entries. Records, ratings and player comparisons.`,
-    image: `${origin}/img/groups/mix.jpg`,
-    largeImage: true,
+    image: null,
   };
 }
 
@@ -112,9 +109,9 @@ export function withPreview(page: Response, url: URL, entries: Entry[]): Respons
     ["og:url", url.href],
     ["og:title", preview.title],
     ["og:description", preview.description],
-    ["og:image", preview.image],
-    ["twitter:card", preview.largeImage ? "summary_large_image" : "summary"],
+    ["twitter:card", "summary"],
   ];
+  if (preview.image) tags.push(["og:image", preview.image]);
   return new HTMLRewriter()
     .on("title", {
       element(el) {
