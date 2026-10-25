@@ -161,7 +161,7 @@ export function Submit() {
               ?
             </div>
             <figcaption>
-              <strong>3. Anything else</strong> — feel free to post even more interesting images.
+              <strong>3. Anything else</strong> — feel free to post even more interesting images. The challenges live from discussion!
             </figcaption>
           </figure>
         </div>
