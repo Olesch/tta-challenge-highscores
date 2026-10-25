@@ -1,7 +1,7 @@
 import { useMemo, useState } from "preact/hooks";
 import { CHALLENGES, CHALLENGE_BY_ID, SETS, type SetId } from "../../shared/challenges";
 import { playerKey } from "../../shared/validation";
-import { BugTag, Loading, MeasureToggle, ProofLink, Stat, Tabs, VerifiedToggle } from "../components";
+import { BugTag, Loading, MeasureToggle, ProofLink, Stat, Tabs } from "../components";
 import {
   type PlayerSummary,
   type Stats,
@@ -21,10 +21,16 @@ export function PlayerPage({ name }: { name: string }) {
   const [verifiedOnly, setVerifiedOnly] = useVerifiedOnly();
   const [set, setSet] = useState<SetId>("mix");
   const [measure, setMeasure] = useMeasure();
-  const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
+  const [asIfVerified, setAsIfVerified] = useState(false);
+  const key = playerKey(name);
+  const unproven = entries ? entries.filter((e) => !e.u && !e.b && playerKey(e.p) === key).length : 0;
+  const whatIf = verifiedOnly && asIfVerified && unproven > 0;
+  const stats = useMemo(
+    () => entries && computeStats(entries, verifiedOnly, whatIf ? key : undefined),
+    [entries, verifiedOnly, whatIf, key],
+  );
 
   if (!stats) return <Loading error={error} />;
-  const key = playerKey(name);
   const player = stats.players.get(key);
   const known = entries!.some((e) => playerKey(e.p) === key);
 
@@ -63,9 +69,41 @@ export function PlayerPage({ name }: { name: string }) {
         </div>
         <div class="bar-group">
           <MeasureToggle value={measure} onChange={setMeasure} />
-          <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+          <div class="segmented" role="group" aria-label="Which entries to count">
+            <button
+              class={verifiedOnly && !whatIf ? "active" : ""}
+              onClick={() => {
+                setVerifiedOnly(true);
+                setAsIfVerified(false);
+              }}
+            >
+              Verified only
+            </button>
+            {unproven > 0 && (
+              <button
+                class={whatIf ? "active" : ""}
+                title={`Count ${player.name}'s unproven entries as if they were verified`}
+                onClick={() => {
+                  setVerifiedOnly(true);
+                  setAsIfVerified(true);
+                }}
+              >
+                As if verified
+              </button>
+            )}
+            <button class={!verifiedOnly ? "active" : ""} onClick={() => setVerifiedOnly(false)}>
+              All entries
+            </button>
+          </div>
         </div>
       </div>
+      {whatIf && (
+        <p class="what-if">
+          <strong>What if:</strong> all {unproven} unproven {unproven === 1 ? "entry" : "entries"} of {player.name}{" "}
+          count as verified, measured against the official records (which stay as they are), so a best above the
+          record rates over 100%. Post the screenshots in Discord and add the links to make it official.
+        </p>
+      )}
       <div class="stats">
         <Stat
           label={measure === "rating" ? "Rating" : "Total domination"}
@@ -94,7 +132,7 @@ export function PlayerPage({ name }: { name: string }) {
             >
               <strong>{measure === "rating" ? `${Math.round(b.pct)}%` : b.score}</strong>{" "}
               <span class="muted">
-                #{b.rank}/{board.length}
+                #{b.rank}/{board.length + (board.some((o) => o.key === key) ? 0 : 1)}
               </span>
               {b.proof ? (
                 <a class="proof-dot" href={b.proof} target="_blank" rel="noopener noreferrer" title="Open proof">

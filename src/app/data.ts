@@ -47,7 +47,12 @@ for (const c of CHALLENGES) SET_SIZES[c.set]++;
  * otherwise every entry counts and a verified score wins a tie.
  * Entries flagged as bugged never count.
  */
-export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
+/**
+ * `trustKey` (the "as if verified" view): with verifiedOnly, this player's unproven entries also count, measured
+ * against the official boards. The boards and everyone else stay unchanged, so a best above the official record
+ * rates over 100%.
+ */
+export function computeStats(entries: Entry[], verifiedOnly: boolean, trustKey?: string): Stats {
   const names = new Map<string, string>();
   for (const e of entries) names.set(playerKey(e.p), e.p); // entries are in id order, so the newest name wins
 
@@ -89,20 +94,21 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
       lastActive: "",
     });
   }
-  for (const board of boards.values()) {
-    for (const b of board) {
-      const p = players.get(b.key)!;
-      p.bests.set(b.challengeId, b);
-      p.played++;
-      if (b.proof) p.verified++;
-      if (b.rank === 1) p.records++;
-      p.total += countedScore(b.score);
-      const set = CHALLENGE_BY_ID.get(b.challengeId)!.set;
-      p.totals[set] += countedScore(b.score);
-      p.rating += b.pct / CHALLENGES.length;
-      p.ratings[set] += b.pct / SET_SIZES[set];
-    }
-  }
+  const addBest = (b: Best) => {
+    const p = players.get(b.key)!;
+    p.bests.set(b.challengeId, b);
+    p.played++;
+    if (b.proof) p.verified++;
+    if (b.rank === 1) p.records++;
+    p.total += countedScore(b.score);
+    const set = CHALLENGE_BY_ID.get(b.challengeId)!.set;
+    p.totals[set] += countedScore(b.score);
+    p.rating += b.pct / CHALLENGES.length;
+    p.ratings[set] += b.pct / SET_SIZES[set];
+  };
+  const trusted = verifiedOnly && trustKey ? trustedBests(entries, trustKey, names.get(trustKey)!, boards) : null;
+  for (const board of boards.values()) for (const b of board) if (!trusted || b.key !== trustKey) addBest(b);
+  if (trusted) for (const b of trusted) addBest(b);
   for (const e of entries) {
     const p = players.get(playerKey(e.p))!;
     if (e.t > p.lastActive) p.lastActive = e.t;
@@ -110,6 +116,31 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
   for (const [key, p] of players) if (p.played === 0) players.delete(key);
 
   return { entries, boards, players };
+}
+
+/** One player's bests over all their entries, ranked and rated against the official boards (see computeStats). */
+function trustedBests(entries: Entry[], key: string, name: string, boards: Map<string, Best[]>): Best[] {
+  const best = new Map<string, Entry>();
+  for (const e of entries) {
+    if (e.b || playerKey(e.p) !== key) continue;
+    const prev = best.get(e.c);
+    if (!prev || e.s > prev.s || (e.s === prev.s && e.u && !prev.u)) best.set(e.c, e);
+  }
+  return [...best.values()].map((e) => {
+    const board = boards.get(e.c) ?? [];
+    const record = countedScore(board[0]?.score ?? 0);
+    const counted = countedScore(e.s);
+    return {
+      key,
+      player: name,
+      challengeId: e.c,
+      score: e.s,
+      proof: e.u,
+      t: e.t,
+      rank: 1 + board.filter((o) => o.key !== key && o.score > e.s).length,
+      pct: record > 0 ? (100 * counted) / record : counted > 0 ? 100 : 0,
+    };
+  });
 }
 
 export interface ScopeTotal {
