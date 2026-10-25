@@ -204,7 +204,7 @@ function PlayNext({ player, stats, measure }: { player: PlayerSummary; stats: St
                           <Link href={challengeHref(c.id)}>{c.name}</Link>{" "}
                           <span class="muted">({setLabel(c.set)})</span>
                         </td>
-                        <td class="num">{Math.round(b.pct)}%</td>
+                        <td class="num">{measure === "rating" ? `${Math.round(b.pct)}%` : `${b.score}/${record.score}`}</td>
                         <td class="num muted" title={`Record: ${record.score} by ${record.player}`}>
                           {record.score - b.score + 1} to beat
                         </td>
@@ -237,9 +237,9 @@ function PlayNext({ player, stats, measure }: { player: PlayerSummary; stats: St
                             <Link href={challengeHref(c.id)}>{c.name}</Link>{" "}
                             <span class="muted">({setLabel(c.set)})</span>
                           </td>
-                          <td class="num">{Math.round(b.pct)}%</td>
-                          <td class="num muted" title={`Record by ${record.player}`}>
-                            {b.score} of {record.score}
+                          {measure === "rating" && <td class="num">{Math.round(b.pct)}%</td>}
+                          <td class={measure === "rating" ? "num muted" : "num"} title={`Record by ${record.player}`}>
+                            {b.score}/{record.score}
                           </td>
                         </tr>
                       );
