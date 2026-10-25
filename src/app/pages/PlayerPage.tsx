@@ -1,8 +1,18 @@
 import { useMemo, useState } from "preact/hooks";
 import { CHALLENGES, CHALLENGE_BY_ID, SETS, type SetId } from "../../shared/challenges";
 import { playerKey } from "../../shared/validation";
-import { BugTag, Loading, ProofLink, Stat, Tabs, VerifiedToggle } from "../components";
-import { type PlayerSummary, type Stats, computeStats, formatDate, formatRating, useEntries, useVerifiedOnly } from "../data";
+import { BugTag, Loading, MeasureToggle, ProofLink, Stat, Tabs, VerifiedToggle } from "../components";
+import {
+  type PlayerSummary,
+  type Stats,
+  computeStats,
+  formatDate,
+  formatMeasure,
+  measureOf,
+  useEntries,
+  useMeasure,
+  useVerifiedOnly,
+} from "../data";
 import { Link, challengeHref } from "../router";
 import { SetGrid } from "../SetGrid";
 
@@ -10,6 +20,7 @@ export function PlayerPage({ name }: { name: string }) {
   const { entries, error } = useEntries();
   const [verifiedOnly, setVerifiedOnly] = useVerifiedOnly();
   const [set, setSet] = useState<SetId>("original");
+  const [measure, setMeasure] = useMeasure();
   const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
 
   if (!stats) return <Loading error={error} />;
@@ -45,18 +56,24 @@ export function PlayerPage({ name }: { name: string }) {
         <div class="bar-group">
           <Tabs value={set} options={SETS} onChange={setSet} />
           <span class="muted">
-            Rating <strong>{formatRating(player.ratings[set])}</strong> · Total <strong>{player.totals[set]}</strong> ·{" "}
+            {measure === "rating" ? "Rating" : "Total"}{" "}
+            <strong>{formatMeasure(measureOf(player, measure, set), measure)}</strong> ·{" "}
             {CHALLENGES.filter((c) => c.set === set && player.bests.has(c.id)).length} / {setCount(set)} played
           </span>
         </div>
-        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+        <div class="bar-group">
+          <MeasureToggle value={measure} onChange={setMeasure} />
+          <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+        </div>
       </div>
       <div class="stats">
-        <Stat label="Rating" value={formatRating(player.rating)} />
+        <Stat
+          label={measure === "rating" ? "Rating" : "Total domination"}
+          value={formatMeasure(measureOf(player, measure), measure)}
+        />
         <Stat label="Records held" value={player.records} />
         <Stat label="Challenges played" value={`${player.played} / ${CHALLENGES.length}`} />
         <Stat label="Verified" value={player.verified} />
-        <Stat label="Total domination" value={player.total} />
       </div>
       <p>
         <Link class="button" href={`/compare?a=${encodeURIComponent(player.name)}`}>
@@ -71,8 +88,11 @@ export function PlayerPage({ name }: { name: string }) {
           if (!b) return <span class="muted">—</span>;
           const board = stats.boards.get(c.id)!;
           return (
-            <span class={b.rank === 1 ? "record" : ""}>
-              <strong>{b.score}</strong>{" "}
+            <span
+              class={b.rank === 1 ? "record" : ""}
+              title={measure === "rating" ? `Domination ${b.score}` : `${Math.round(b.pct)}% of the record`}
+            >
+              <strong>{measure === "rating" ? `${Math.round(b.pct)}%` : b.score}</strong>{" "}
               <span class="muted">
                 #{b.rank}/{board.length}
               </span>
