@@ -3,6 +3,8 @@ import { CHALLENGES, CHALLENGE_BY_ID, SETS, type SetId } from "../../shared/chal
 import { playerKey } from "../../shared/validation";
 import { BugTag, Loading, MeasureToggle, ProofLink, Stat, Tabs } from "../components";
 import {
+  type Best,
+  type Measure,
   type PlayerSummary,
   type Stats,
   computeStats,
@@ -144,7 +146,7 @@ export function PlayerPage({ name }: { name: string }) {
         }}
       />
 
-      <PlayNext player={player} stats={stats} />
+      <PlayNext player={player} stats={stats} measure={measure} />
 
       <h2>Latest submissions</h2>
       <ul class="plain">
@@ -164,15 +166,16 @@ export function PlayerPage({ name }: { name: string }) {
 }
 
 /** Suggestions: records within reach, and challenges not played yet. */
-function PlayNext({ player, stats }: { player: PlayerSummary; stats: Stats }) {
+function PlayNext({ player, stats, measure }: { player: PlayerSummary; stats: Stats; measure: Measure }) {
   const SHOW = 8;
+  const gap = (b: Best) => stats.boards.get(b.challengeId)![0].score - b.score;
   const closest = [...player.bests.values()]
     .filter((b) => b.rank > 1)
-    .sort((a, b) => b.pct - a.pct)
+    .sort((a, b) => (measure === "rating" ? b.pct - a.pct : gap(a) - gap(b)))
     .slice(0, SHOW);
   const lowest = [...player.bests.values()]
     .filter((b) => b.rank > 1)
-    .sort((a, b) => a.pct - b.pct)
+    .sort((a, b) => (measure === "rating" ? a.pct - b.pct : a.score - b.score))
     .slice(0, SHOW);
   const unplayed = CHALLENGES.length - player.played;
   if (closest.length === 0 && lowest.length === 0 && unplayed === 0) return null;
@@ -185,7 +188,10 @@ function PlayNext({ player, stats }: { player: PlayerSummary; stats: Stats }) {
         {closest.length > 0 && (
           <div>
             <h3 class="subhead">Records within reach</h3>
-            <p class="muted">Where {player.name}'s best is closest to the record.</p>
+            <p class="muted">
+              Where {player.name}'s best is closest to the record
+              {measure === "rating" ? " (in % of the record)" : " (fewest points to beat it)"}.
+            </p>
             <div class="table-wrap">
               <table>
                 <tbody>
@@ -213,7 +219,11 @@ function PlayNext({ player, stats }: { player: PlayerSummary; stats: Stats }) {
         {(lowest.length > 0 || unplayed > 0) && (
           <div>
             <h3 class="subhead">Lowest results</h3>
-            <p class="muted">Where {player.name}'s best is furthest from the record: the most rating to gain.</p>
+            <p class="muted">
+              {measure === "rating"
+                ? `Where ${player.name}'s best is the lowest % of the record: the most rating to gain.`
+                : `${player.name}'s lowest best dominations.`}
+            </p>
             {lowest.length > 0 && (
               <div class="table-wrap">
                 <table>
