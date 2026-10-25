@@ -6,6 +6,10 @@ where node >nul 2>nul || (
   echo Node.js is not installed. Get the LTS version from https://nodejs.org and try again.
   goto fail
 )
+if not exist data\challenges.json (
+  echo The challenge data and pictures are missing. Run game-files.bat first.
+  goto fail
+)
 if not exist node_modules (
   echo Installing libraries...
   call npm install || goto fail

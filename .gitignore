@@ -4,3 +4,8 @@ dist/
 .dev.vars
 *.tsbuildinfo
 backups/
+
+# Czech Games Edition material from the game files; regenerate with game-files.bat
+data/challenges.json
+public/img/challenges/
+public/img/groups/

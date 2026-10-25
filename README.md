@@ -25,7 +25,10 @@ git clone <this repository>
 cd "Challenges TTA"
 npm install
 npx wrangler login
+game-files.bat
 ```
+
+`game-files.bat` recreates the challenge data and pictures from your installed game (see *Game files* below).
 
 Then for every change:
 
@@ -78,16 +81,32 @@ It asks you to type a confirmation phrase and saves a backup to `backups/` first
 Backups: `npm run db:backup:remote` saves the live database to `backups/tta-challenges-latest.sql`.
 Restore one with `npx wrangler d1 execute tta-challenges --remote --file=backups/<file>.sql`.
 
-## Data
+## Game files (not in git)
 
-- `data/challenges.json` — the 97 challenges, generated from the game files:
-  `python tools/extract_challenges.py "D:/Games/GOG/Through the Ages"`
-- `public/img/` — challenge pictures and group backgrounds, cut from the game's atlas:
-  `python tools/extract_images.py "D:/Games/GOG/Through the Ages"`
+The challenge texts and pictures belong to Czech Games Edition, so they are not stored in git. They are
+generated from an installed copy of the game (Steam or GOG) and must exist before building or deploying:
+
+```bash
+game-files.bat "D:\Games\GOG\Through the Ages"
+```
+
+Without an argument it uses `D:/Games/GOG/Through the Ages` (or the `TTA_GAME_DIR` environment variable).
+It needs Python 3 and installs `pyyaml` and `pillow` if they are missing. It writes:
+
+- `data/challenges.json` — the 97 challenges (names, rules, opponents, difficulty), from the scenario files
+- `public/img/challenges/` — challenge pictures, cut from `Atlases/scenarios_jpeg.jpg`
+- `public/img/groups/` — group backgrounds
+
+Run it again after a game update that changes challenges. The two scripts behind it,
+`tools/extract_challenges.py` and `tools/extract_images.py`, can also be run separately.
+
+## Data in git
+
+- `public/img/examples/` — the two example screenshots on the submit page (our own screenshots)
 - `seed/import.sql`, `data/weekly.json` — generated from the old sheet (download as .xlsx):
   `python tools/import_sheet.py sheet.xlsx`
 
-The Python tools need `pip install pyyaml pillow openpyxl`.
+The sheet import also needs `pip install openpyxl`.
 
 ## Admin
 
