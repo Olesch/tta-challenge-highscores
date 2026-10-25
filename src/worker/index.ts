@@ -156,7 +156,7 @@ async function adminList(env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT id, challenge_id AS c, player AS p, score AS s, proof_url AS u, created_at AS t,
             hidden, hidden_reason AS hiddenReason, source, ip_hash AS ipHash, bugged AS b, checked
-     FROM entries ORDER BY id DESC`,
+     FROM entries ORDER BY created_at DESC, id DESC`,
   ).all<Omit<AdminEntry, "hidden" | "checked"> & { hidden: number; checked: number }>();
   return json(results.map((r) => ({ ...r, hidden: r.hidden === 1, checked: r.checked === 1 })));
 }

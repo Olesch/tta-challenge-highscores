@@ -991,6 +991,14 @@ h3.subhead {
   border-color: var(--gold);
   font-weight: 600;
 }
+.check-btn.warn {
+  color: var(--side-b);
+  border-color: #7a5430;
+}
+.check-btn.good {
+  color: var(--ok);
+  border-color: #3f6438;
+}
 .bar-buttons {
   display: flex;
   gap: 8px;
@@ -1014,9 +1022,6 @@ select {
   align-items: center;
   gap: 8px;
   margin: 10px 0;
-}
-.check-cell {
-  margin-top: 4px;
 }
 .admin-table tr.unchecked-row td:first-child {
   box-shadow: inset 3px 0 0 var(--side-b);

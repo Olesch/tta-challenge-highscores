@@ -321,28 +321,6 @@ export function Admin() {
                         >
                           edit
                         </button>
-                        {e.u && (
-                          <div class="check-cell">
-                            {e.checked ? (
-                              <span class="badge good">✓ checked</span>
-                            ) : (
-                              <span class="badge warn">not checked</span>
-                            )}{" "}
-                            <button
-                              class="link"
-                              onClick={() =>
-                                act(() =>
-                                  api(`entries/${e.id}`, {
-                                    method: "PATCH",
-                                    body: JSON.stringify({ checked: !e.checked }),
-                                  }),
-                                )
-                              }
-                            >
-                              {e.checked ? "uncheck" : "mark checked"}
-                            </button>
-                          </div>
-                        )}
                       </td>
                       <td class="muted">
                         {e.source}
@@ -354,6 +332,19 @@ export function Admin() {
                         ))}
                       </td>
                       <td class="actions">
+                        {e.u && (
+                          <button
+                            class={`check-btn ${e.checked ? "good" : "warn"}`}
+                            title={e.checked ? "Proof checked by an admin — click to undo" : "Click after checking the proof"}
+                            onClick={() =>
+                              act(() =>
+                                api(`entries/${e.id}`, { method: "PATCH", body: JSON.stringify({ checked: !e.checked }) }),
+                              )
+                            }
+                          >
+                            {e.checked ? "✓ Checked" : "Not checked"}
+                          </button>
+                        )}{" "}
                         <button
                           title="Obtained through a fixed game bug: listed but never counted"
                           onClick={() =>
