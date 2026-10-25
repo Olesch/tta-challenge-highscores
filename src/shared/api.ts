@@ -11,6 +11,8 @@ export interface Entry {
   u: string | null;
   /** ISO timestamp */
   t: string;
+  /** 1 if obtained through a fixed game bug: listed, but never counted */
+  b: number;
 }
 
 export interface SubmitScore {

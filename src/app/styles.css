@@ -849,3 +849,138 @@ th.num.sortable button {
     grid-template-columns: 1fr;
   }
 }
+
+.bug-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid var(--error);
+  color: var(--error);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+tr.bugged td {
+  opacity: 0.6;
+}
+
+h3.subhead {
+  font-family: Cinzel, Georgia, serif;
+  color: var(--gold);
+  margin: 1.4em 0 0.2em;
+}
+
+/* Record history chart */
+.chart-wrap {
+  position: relative;
+  margin: 8px 0 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px;
+}
+.chart-wrap svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.chart-wrap .grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.chart-wrap .axis {
+  fill: var(--muted);
+  font-size: 12px;
+}
+.record-line {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.chart-wrap .marker {
+  fill: var(--gold);
+  stroke: var(--bg-raised);
+  stroke-width: 2;
+}
+.chart-wrap .marker.active {
+  fill: var(--gold-strong);
+  r: 7;
+}
+.chart-wrap .hit {
+  fill: transparent;
+  cursor: pointer;
+}
+.chart-wrap g:focus {
+  outline: none;
+}
+.chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.play-next {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.play-next h3.subhead {
+  margin-top: 0;
+}
+@media (max-width: 800px) {
+  .play-next {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-table td.flags {
+  color: var(--side-b);
+  font-size: 0.8rem;
+  white-space: normal;
+  min-width: 180px;
+}
+
+/* Submit review */
+.review h2 {
+  margin-top: 0.6em;
+}
+.review td.notes {
+  white-space: normal;
+  min-width: 220px;
+}
+.badge {
+  display: inline-block;
+  margin: 2px 6px 2px 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  border: 1px solid var(--line);
+}
+.badge.good {
+  color: var(--ok);
+  border-color: #3f6438;
+}
+.badge.warn {
+  color: var(--side-b);
+  border-color: #7a5430;
+}
+.badge.record {
+  color: #1b140c;
+  background: var(--gold);
+  border-color: var(--gold);
+  font-weight: 600;
+}
+.bar-buttons {
+  display: flex;
+  gap: 8px;
+}

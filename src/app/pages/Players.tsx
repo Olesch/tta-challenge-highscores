@@ -1,11 +1,12 @@
 import { useMemo, useState } from "preact/hooks";
 import { Loading, PlayerLink, VerifiedToggle } from "../components";
-import { type PlayerSummary, computeStats, formatDate, useEntries, useVerifiedOnly } from "../data";
+import { type PlayerSummary, computeStats, formatDate, formatRating, useEntries, useVerifiedOnly } from "../data";
 
-type SortKey = "name" | "played" | "verified" | "records" | "total" | "original" | "expansion" | "mix" | "lastActive";
+type SortKey = "name" | "rating" | "played" | "verified" | "records" | "total" | "original" | "expansion" | "mix" | "lastActive";
 
 const COLUMNS: { key: SortKey; label: string; num?: boolean }[] = [
   { key: "name", label: "Player" },
+  { key: "rating", label: "Rating", num: true },
   { key: "records", label: "Records", num: true },
   { key: "played", label: "Played", num: true },
   { key: "verified", label: "Verified", num: true },
@@ -25,7 +26,7 @@ function sortValue(p: PlayerSummary, key: SortKey): string | number {
 export function Players() {
   const { entries, error } = useEntries();
   const [verifiedOnly, setVerifiedOnly] = useVerifiedOnly();
-  const [sort, setSort] = useState<SortKey>("total");
+  const [sort, setSort] = useState<SortKey>("rating");
   const [query, setQuery] = useState("");
   const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
 
@@ -45,7 +46,9 @@ export function Players() {
     <>
       <h1>Players</h1>
       <p class="lead">
-        Totals add up each player's best domination per challenge. Click a column to sort.
+        <strong>Rating</strong> compares each of your best dominations with the record (holding the record = 100%) and
+        averages that over all 97 challenges, so unplayed ones count as 0%. <strong>Totals</strong> simply add up your best
+        dominations. Click a column to sort.
       </p>
       <div class="sticky-bar">
         <input
@@ -77,13 +80,16 @@ export function Players() {
                 <td>
                   <PlayerLink name={p.name} />
                 </td>
+                <td class="num score" title={`Original ${formatRating(p.ratings.original)} · Expansion ${formatRating(p.ratings.expansion)} · Mix ${formatRating(p.ratings.mix)}`}>
+                  {formatRating(p.rating)}
+                </td>
                 <td class="num">{p.records || ""}</td>
                 <td class="num">{p.played}</td>
                 <td class="num">{p.verified}</td>
                 <td class="num">{p.totals.original}</td>
                 <td class="num">{p.totals.expansion}</td>
                 <td class="num">{p.totals.mix}</td>
-                <td class="num score">{p.total}</td>
+                <td class="num">{p.total}</td>
                 <td class="muted">{formatDate(p.lastActive)}</td>
               </tr>
             ))}

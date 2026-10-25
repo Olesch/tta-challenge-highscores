@@ -1,8 +1,8 @@
 import { useMemo, useState } from "preact/hooks";
 import { CHALLENGES, CHALLENGE_BY_ID, SETS, type SetId } from "../../shared/challenges";
 import { playerKey } from "../../shared/validation";
-import { Loading, ProofLink, Stat, Tabs, VerifiedToggle } from "../components";
-import { computeStats, formatDate, useEntries, useVerifiedOnly } from "../data";
+import { BugTag, Loading, ProofLink, Stat, Tabs, VerifiedToggle } from "../components";
+import { type PlayerSummary, type Stats, computeStats, formatDate, formatRating, useEntries, useVerifiedOnly } from "../data";
 import { Link, challengeHref } from "../router";
 import { SetGrid } from "../SetGrid";
 
@@ -45,13 +45,14 @@ export function PlayerPage({ name }: { name: string }) {
         <div class="bar-group">
           <Tabs value={set} options={SETS} onChange={setSet} />
           <span class="muted">
-            Total <strong>{player.totals[set]}</strong> ·{" "}
+            Rating <strong>{formatRating(player.ratings[set])}</strong> · Total <strong>{player.totals[set]}</strong> ·{" "}
             {CHALLENGES.filter((c) => c.set === set && player.bests.has(c.id)).length} / {setCount(set)} played
           </span>
         </div>
         <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
       </div>
       <div class="stats">
+        <Stat label="Rating" value={formatRating(player.rating)} />
         <Stat label="Records held" value={player.records} />
         <Stat label="Challenges played" value={`${player.played} / ${CHALLENGES.length}`} />
         <Stat label="Verified" value={player.verified} />
@@ -85,6 +86,8 @@ export function PlayerPage({ name }: { name: string }) {
         }}
       />
 
+      <PlayNext player={player} stats={stats} />
+
       <h2>Latest submissions</h2>
       <ul class="plain">
         {recent.map((e) => {
@@ -92,12 +95,85 @@ export function PlayerPage({ name }: { name: string }) {
           return (
             <li>
               <span class="muted">{formatDate(e.t)}</span> — <Link href={challengeHref(c.id)}>{c.name}</Link>{" "}
-              <span class="muted">({SETS.find((s) => s.id === c.set)!.label})</span>: <strong>{e.s}</strong>{" "}
-              <ProofLink url={e.u} />
+              <span class="muted">({SETS.find((s) => s.id === c.set)!.label})</span>: <strong>{e.s}</strong>
+              {e.b ? <BugTag /> : null} <ProofLink url={e.u} />
             </li>
           );
         })}
       </ul>
+    </>
+  );
+}
+
+/** Suggestions: records within reach, and challenges not played yet. */
+function PlayNext({ player, stats }: { player: PlayerSummary; stats: Stats }) {
+  const SHOW = 8;
+  const closest = [...player.bests.values()]
+    .filter((b) => b.rank > 1)
+    .sort((a, b) => b.pct - a.pct)
+    .slice(0, SHOW);
+  const unplayed = CHALLENGES.filter((c) => !player.bests.has(c.id)).sort(
+    (a, b) => a.difficulty - b.difficulty || (stats.boards.get(b.id)?.length ?? 0) - (stats.boards.get(a.id)?.length ?? 0),
+  );
+  if (closest.length === 0 && unplayed.length === 0) return null;
+  const setLabel = (id: SetId) => SETS.find((s) => s.id === id)!.label;
+
+  return (
+    <>
+      <h2>What to play next</h2>
+      <div class="play-next">
+        {closest.length > 0 && (
+          <div>
+            <h3 class="subhead">Records within reach</h3>
+            <p class="muted">Where {player.name}'s best is closest to the record.</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  {closest.map((b) => {
+                    const c = CHALLENGE_BY_ID.get(b.challengeId)!;
+                    const record = stats.boards.get(c.id)![0];
+                    return (
+                      <tr>
+                        <td>
+                          <Link href={challengeHref(c.id)}>{c.name}</Link>{" "}
+                          <span class="muted">({setLabel(c.set)})</span>
+                        </td>
+                        <td class="num">{Math.round(b.pct)}%</td>
+                        <td class="num muted" title={`Record: ${record.score} by ${record.player}`}>
+                          {record.score - b.score + 1} to beat
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        {unplayed.length > 0 && (
+          <div>
+            <h3 class="subhead">Not played yet ({unplayed.length})</h3>
+            <p class="muted">Easiest first. Every new challenge raises the rating.</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  {unplayed.slice(0, SHOW).map((c) => (
+                    <tr>
+                      <td>
+                        <Link href={challengeHref(c.id)}>{c.name}</Link>{" "}
+                        <span class="muted">({setLabel(c.set)})</span>
+                      </td>
+                      <td class="num muted">difficulty {c.difficulty}</td>
+                      <td class="num muted">{stats.boards.get(c.id)?.length ?? 0} players</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {unplayed.length > SHOW && <p class="muted">…and {unplayed.length - SHOW} more.</p>}
+          </div>
+        )}
+      </div>
     </>
   );
 }

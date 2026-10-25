@@ -19,6 +19,8 @@ SET_COLUMNS = {"original": range(2, 31), "expansion": range(31, 63), "mix": rang
 PROOF_COLUMN = 99
 # Pre-form scores have no timestamp; date them just before the first form response.
 LEGACY_DATE = "2024-07-01T00:00:00.000Z"
+# Final Mix scores above 1000 came from a since-fixed game bug.
+BUGGED_SQL = "UPDATE entries SET bugged = 1 WHERE challenge_id = 'mix4_mix' AND score > 1000 AND source = 'sheet';"
 
 
 # Misspelled names in the sheet -> the player's real name.
@@ -100,7 +102,9 @@ def import_entries(wb, challenges):
 
     out = ROOT / "seed" / "import.sql"
     out.parent.mkdir(exist_ok=True)
-    out.write_text("DELETE FROM entries WHERE source = 'sheet';\n" + "\n".join(lines) + "\n", encoding="utf-8")
+    # Same rule as migrations/0002_bugged.sql, so a re-import keeps the bug flags.
+    sql_text = "DELETE FROM entries WHERE source = 'sheet';\n" + "\n".join(lines) + "\n" + BUGGED_SQL + "\n"
+    out.write_text(sql_text, encoding="utf-8")
     print(f"wrote {len(lines)} entries to {out} (skipped {skipped} deleted rows)")
 
 

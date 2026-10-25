@@ -2,7 +2,7 @@ import { useMemo, useState } from "preact/hooks";
 import { CHALLENGES, SETS, type SetId } from "../../shared/challenges";
 import { playerKey } from "../../shared/validation";
 import { Loading, PlayerLink, PlayerPicker, Stat, Tabs, VerifiedToggle } from "../components";
-import { computeStats, useEntries, useVerifiedOnly } from "../data";
+import { computeStats, formatRating, useEntries, useVerifiedOnly } from "../data";
 import { SetGrid } from "../SetGrid";
 
 function readParam(name: string) {
@@ -93,6 +93,7 @@ export function Compare() {
                   ))}
                   <th class="num">Total</th>
                   <th class="num">Records</th>
+                  <th class="num">Rating</th>
                 </tr>
               </thead>
               <tbody>
@@ -106,6 +107,7 @@ export function Compare() {
                     ))}
                     <td class="num score">{p.total}</td>
                     <td class="num">{p.records}</td>
+                    <td class="num score">{formatRating(p.rating)}</td>
                   </tr>
                 ))}
                 <tr class="diff-row">
@@ -120,6 +122,9 @@ export function Compare() {
                   </td>
                   <td class="num">
                     <Diff value={pa.records - pb.records} />
+                  </td>
+                  <td class="num">
+                    <Diff value={Math.round((pa.rating - pb.rating) * 10) / 10} suffix="%" />
                   </td>
                 </tr>
               </tbody>
@@ -155,7 +160,12 @@ export function Compare() {
   );
 }
 
-function Diff({ value }: { value: number }) {
-  if (value === 0) return <span class="muted">±0</span>;
-  return <span class={value > 0 ? "side-a" : "side-b"}>{value > 0 ? `+${value}` : value}</span>;
+function Diff({ value, suffix = "" }: { value: number; suffix?: string }) {
+  if (value === 0) return <span class="muted">±0{suffix}</span>;
+  return (
+    <span class={value > 0 ? "side-a" : "side-b"}>
+      {value > 0 ? `+${value}` : value}
+      {suffix}
+    </span>
+  );
 }

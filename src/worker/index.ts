@@ -1,6 +1,7 @@
 import { CHALLENGE_BY_ID } from "../shared/challenges";
 import type { AdminEntry, Config, Entry, SubmitRequest } from "../shared/api";
 import { cleanName, normalizeProofUrl, playerKey, validateName, validateScore } from "../shared/validation";
+import { withPreview } from "./preview";
 
 interface Env {
   DB: D1Database;
@@ -16,7 +17,7 @@ const HOURLY_LIMIT = 150;
 /** How long an isolate keeps the entry list before re-reading D1. */
 const ENTRIES_TTL_MS = 30_000;
 
-let entriesCache: { at: number; body: string } | null = null;
+let entriesCache: { at: number; body: string; list: Entry[] } | null = null;
 
 export default {
   async fetch(request, env): Promise<Response> {
@@ -48,6 +49,10 @@ async function route(request: Request, env: Env, url: URL): Promise<Response | n
     return json(config);
   }
   if (pathname === "/api/entries" && method === "GET") return listEntries(env);
+  if (method === "GET" && !pathname.startsWith("/api/")) {
+    // Page routes the Worker runs first for (see wrangler.jsonc): serve the app with link-preview tags.
+    return withPreview(await env.ASSETS.fetch(request), url, await loadEntries(env));
+  }
   if (pathname === "/api/entries" && method === "POST") return submit(request, env);
 
   if (pathname.startsWith("/api/admin/")) {
@@ -60,15 +65,24 @@ async function route(request: Request, env: Env, url: URL): Promise<Response | n
   return null;
 }
 
-async function listEntries(env: Env): Promise<Response> {
+async function loadEntries(env: Env): Promise<Entry[]> {
+  await refreshEntries(env);
+  return entriesCache!.list;
+}
+
+async function refreshEntries(env: Env) {
   if (!entriesCache || Date.now() - entriesCache.at > ENTRIES_TTL_MS) {
     const { results } = await env.DB.prepare(
-      `SELECT id, challenge_id AS c, player AS p, score AS s, proof_url AS u, created_at AS t
+      `SELECT id, challenge_id AS c, player AS p, score AS s, proof_url AS u, created_at AS t, bugged AS b
        FROM entries WHERE hidden = 0 ORDER BY id`,
     ).all<Entry>();
-    entriesCache = { at: Date.now(), body: JSON.stringify(results) };
+    entriesCache = { at: Date.now(), body: JSON.stringify(results), list: results };
   }
-  return new Response(entriesCache.body, {
+}
+
+async function listEntries(env: Env): Promise<Response> {
+  await refreshEntries(env);
+  return new Response(entriesCache!.body, {
     headers: { "content-type": "application/json", "cache-control": "public, max-age=15" },
   });
 }
@@ -141,16 +155,20 @@ function requireAdmin(request: Request, env: Env) {
 async function adminList(env: Env): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT id, challenge_id AS c, player AS p, score AS s, proof_url AS u, created_at AS t,
-            hidden, hidden_reason AS hiddenReason, source, ip_hash AS ipHash
+            hidden, hidden_reason AS hiddenReason, source, ip_hash AS ipHash, bugged AS b
      FROM entries ORDER BY id DESC`,
   ).all<Omit<AdminEntry, "hidden"> & { hidden: number }>();
   return json(results.map((r) => ({ ...r, hidden: r.hidden === 1 })));
 }
 
 async function adminUpdate(request: Request, env: Env, id: number): Promise<Response> {
-  const body = await readJson<{ hidden?: boolean; hiddenReason?: string | null; proofUrl?: string | null; score?: number }>(
-    request,
-  );
+  const body = await readJson<{
+    hidden?: boolean;
+    hiddenReason?: string | null;
+    proofUrl?: string | null;
+    score?: number;
+    bugged?: boolean;
+  }>(request);
   const sets: string[] = [];
   const args: unknown[] = [];
   if (body.hidden !== undefined) {
@@ -169,6 +187,10 @@ async function adminUpdate(request: Request, env: Env, id: number): Promise<Resp
     if (scoreError) throw new HttpError(400, scoreError);
     sets.push("score = ?");
     args.push(Number(body.score));
+  }
+  if (body.bugged !== undefined) {
+    sets.push("bugged = ?");
+    args.push(body.bugged ? 1 : 0);
   }
   if (sets.length === 0) throw new HttpError(400, "Nothing to update.");
   const res = await env.DB.prepare(`UPDATE entries SET ${sets.join(", ")} WHERE id = ?`)

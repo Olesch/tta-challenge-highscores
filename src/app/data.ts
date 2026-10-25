@@ -13,6 +13,8 @@ export interface Best {
   t: string;
   /** 1-based rank within the challenge (ties share a rank). */
   rank: number;
+  /** Score as a percentage of the challenge record (100 = holds the record). */
+  pct: number;
 }
 
 export interface PlayerSummary {
@@ -24,6 +26,9 @@ export interface PlayerSummary {
   records: number;
   total: number;
   totals: Record<SetId, number>;
+  /** Average of `pct` over every challenge (unplayed ones count as 0), 0–100. */
+  rating: number;
+  ratings: Record<SetId, number>;
   lastActive: string;
 }
 
@@ -34,9 +39,13 @@ export interface Stats {
   players: Map<string, PlayerSummary>;
 }
 
+const SET_SIZES: Record<SetId, number> = { original: 0, expansion: 0, mix: 0 };
+for (const c of CHALLENGES) SET_SIZES[c.set]++;
+
 /**
  * Builds rankings. With `verifiedOnly`, only entries that link a Discord proof count;
  * otherwise every entry counts and a verified score wins a tie.
+ * Entries flagged as bugged never count.
  */
 export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
   const names = new Map<string, string>();
@@ -44,12 +53,12 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
 
   const bestByPair = new Map<string, Best>();
   for (const e of entries) {
-    if (verifiedOnly && !e.u) continue;
+    if (e.b || (verifiedOnly && !e.u)) continue;
     const key = playerKey(e.p);
     const pair = `${e.c}\u0000${key}`;
     const prev = bestByPair.get(pair);
     if (!prev || e.s > prev.score || (e.s === prev.score && e.u && !prev.proof)) {
-      bestByPair.set(pair, { key, player: names.get(key)!, challengeId: e.c, score: e.s, proof: e.u, t: e.t, rank: 0 });
+      bestByPair.set(pair, { key, player: names.get(key)!, challengeId: e.c, score: e.s, proof: e.u, t: e.t, rank: 0, pct: 0 });
     }
   }
 
@@ -57,7 +66,10 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
   for (const b of bestByPair.values()) boards.get(b.challengeId)?.push(b);
   for (const board of boards.values()) {
     board.sort((a, b) => b.score - a.score || a.t.localeCompare(b.t));
-    board.forEach((b, i) => (b.rank = i > 0 && board[i - 1].score === b.score ? board[i - 1].rank : i + 1));
+    board.forEach((b, i) => {
+      b.rank = i > 0 && board[i - 1].score === b.score ? board[i - 1].rank : i + 1;
+      b.pct = board[0].score > 0 ? (100 * b.score) / board[0].score : 100;
+    });
   }
 
   const players = new Map<string, PlayerSummary>();
@@ -71,6 +83,8 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
       records: 0,
       total: 0,
       totals: { original: 0, expansion: 0, mix: 0 },
+      rating: 0,
+      ratings: { original: 0, expansion: 0, mix: 0 },
       lastActive: "",
     });
   }
@@ -82,7 +96,10 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
       if (b.proof) p.verified++;
       if (b.rank === 1) p.records++;
       p.total += b.score;
-      p.totals[CHALLENGE_BY_ID.get(b.challengeId)!.set] += b.score;
+      const set = CHALLENGE_BY_ID.get(b.challengeId)!.set;
+      p.totals[set] += b.score;
+      p.rating += b.pct / CHALLENGES.length;
+      p.ratings[set] += b.pct / SET_SIZES[set];
     }
   }
   for (const e of entries) {
@@ -101,7 +118,7 @@ export interface ScopeTotal {
   covered: number;
   size: number;
   /** Players ranked by the sum of their own bests in scope ("best single player"). */
-  ranking: { name: string; total: number; played: number }[];
+  ranking: { name: string; total: number; played: number; rating: number }[];
 }
 
 /** Totals over a set of challenges (a group, a set, or everything). */
@@ -119,14 +136,16 @@ export function scopeTotal(stats: Stats, challenges: Challenge[]): ScopeTotal {
   for (const p of stats.players.values()) {
     let total = 0;
     let played = 0;
+    let pctSum = 0;
     for (const c of challenges) {
       const b = p.bests.get(c.id);
       if (b) {
         total += b.score;
         played++;
+        pctSum += b.pct;
       }
     }
-    if (played) ranking.push({ name: p.name, total, played });
+    if (played) ranking.push({ name: p.name, total, played, rating: pctSum / challenges.length });
   }
   ranking.sort((a, b) => b.total - a.total || b.played - a.played);
   return { pooled, covered, size: challenges.length, ranking };
@@ -178,6 +197,10 @@ export function useVerifiedOnly(): [boolean, (v: boolean) => void] {
     }
   };
   return [value, set];
+}
+
+export function formatRating(rating: number): string {
+  return `${rating.toFixed(1)}%`;
 }
 
 export function formatDate(iso: string): string {

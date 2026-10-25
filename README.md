@@ -5,6 +5,11 @@ Scoreboard for the challenges of the *Through the Ages* app. Replaces the Google
 - Anyone can submit their domination (final score minus the second-place score), no accounts. An entry with a Discord message link (from the TtA server) counts as **verified**;
   without one it is saved but only shown under "All entries".
 - Anyone can download all entries as CSV or JSON (footer of every page).
+- **Rating** = each best domination as a % of the record, averaged over all 97 challenges (unplayed = 0%).
+- Entries flagged as **bug** (e.g. the Final Mix scores from a since-fixed game bug) stay listed but never count
+  for records, ranks, ratings or totals. Toggle the flag on the admin page.
+- Submitting shows a review step first (new records, personal bests, likely typos, reused proof links).
+- Challenge and player links show a preview card in Discord (Open Graph tags added by the Worker).
 - Pages: highscores (with pooled and best-single-player totals), challenge rankings, players, player profile,
   compare two players, submit, weekly-challenge winners (history), admin.
 
@@ -59,5 +64,12 @@ The Python tools need `pip install pyyaml pillow openpyxl`.
 
 ## Admin
 
-Open `/admin` and enter `ADMIN_TOKEN`. You can hide entries (cheats, mistakes), edit a score or proof link,
-and merge two player names (e.g. typos like "Wawrzienic" → "Wawrzyniec").
+Set the password once (it is stored as an encrypted Cloudflare secret and can't be read back):
+
+```bash
+npx wrangler secret put ADMIN_TOKEN
+```
+
+Run it again to change it. Keep the password in your password manager. Then open `/admin` and enter it.
+You can hide entries (cheats, mistakes), mark entries as bug, edit a domination or proof link, merge two player
+names, and filter for flagged entries (unproven scores over 2× everyone else's best, proof links used by two players).

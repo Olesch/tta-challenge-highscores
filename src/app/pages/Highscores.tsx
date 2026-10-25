@@ -1,7 +1,7 @@
 import { useMemo, useState } from "preact/hooks";
 import { CHALLENGES, GROUP_LABELS, SETS, type SetId, groupsOf } from "../../shared/challenges";
 import { ChallengeImage, Difficulty, Loading, PlayerLink, ScoreHolder, Tabs, VerifiedToggle } from "../components";
-import { type ScopeTotal, computeStats, scopeTotal, useEntries, useVerifiedOnly } from "../data";
+import { type ScopeTotal, computeStats, formatRating, scopeTotal, useEntries, useVerifiedOnly } from "../data";
 import { Link, challengeHref } from "../router";
 import { SetGrid } from "../SetGrid";
 import { TTA_APP_URL } from "../links";
@@ -171,7 +171,9 @@ export function Highscores() {
         <h2>Totals</h2>
         <p class="lead">
           <strong>Pooled</strong> adds up the record of every challenge, as if all players formed one team.{" "}
-          <strong>Best single player</strong> is the highest sum of one player's own best dominations.
+          <strong>Best single player</strong> is the highest sum of one player's own best dominations.{" "}
+          <strong>Best rating</strong> averages each player's best as a percentage of the record over all challenges
+          in scope (see <Link href="/players">Players</Link>).
         </p>
         <div class="table-wrap">
           <table>
@@ -182,6 +184,7 @@ export function Highscores() {
                 <th class="num">Records set</th>
                 <th>Best single player</th>
                 <th>Runners-up</th>
+                <th>Best rating</th>
               </tr>
             </thead>
             <tbody>
@@ -211,6 +214,18 @@ export function Highscores() {
                         <PlayerLink name={r.name} /> <span class="muted">{r.total}</span>
                       </span>
                     ))}
+                  </td>
+                  <td>
+                    {(() => {
+                      const top = [...total.ranking].sort((a, b) => b.rating - a.rating)[0];
+                      return top ? (
+                        <>
+                          <strong>{formatRating(top.rating)}</strong> <PlayerLink name={top.name} />
+                        </>
+                      ) : (
+                        <span class="muted">—</span>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))}

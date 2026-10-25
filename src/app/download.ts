@@ -1,7 +1,7 @@
 import { CHALLENGE_BY_ID, GROUP_LABELS, SETS } from "../shared/challenges";
 import { loadEntries } from "./data";
 
-const COLUMNS = ["id", "date", "player", "set", "group", "challenge_id", "challenge", "players", "domination", "verified", "proof_url"];
+const COLUMNS = ["id", "date", "player", "set", "group", "challenge_id", "challenge", "players", "domination", "verified", "proof_url", "bugged"];
 
 async function rows() {
   const entries = await loadEntries(true);
@@ -19,6 +19,7 @@ async function rows() {
       domination: e.s,
       verified: e.u ? "yes" : "no",
       proof_url: e.u ?? "",
+      bugged: e.b ? "yes" : "no",
     };
   });
 }

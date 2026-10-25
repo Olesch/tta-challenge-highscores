@@ -122,3 +122,12 @@ export function PlayerPicker({
     </>
   );
 }
+
+/** Marks an entry obtained through a since-fixed game bug. */
+export function BugTag() {
+  return (
+    <span class="bug-tag" title="Obtained through a game bug that has since been fixed. Listed, but not counted anywhere.">
+      bug
+    </span>
+  );
+}

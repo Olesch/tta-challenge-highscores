@@ -1,6 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 import type { AdminEntry } from "../../shared/api";
 import { CHALLENGE_BY_ID } from "../../shared/challenges";
+import { isFarAbove, otherProofOwners, proofOwners, records } from "../checks";
+import { BugTag } from "../components";
 import { formatDate, loadEntries } from "../data";
 
 function storedToken() {
@@ -18,6 +20,7 @@ export function Admin() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
   const [showHidden, setShowHidden] = useState(true);
+  const [flaggedOnly, setFlaggedOnly] = useState(false);
   const [renameFrom, setRenameFrom] = useState("");
   const [renameTo, setRenameTo] = useState("");
 
@@ -79,9 +82,23 @@ export function Admin() {
     );
   }
 
+  // Suspicious-entry checks run against what the public sees (hidden entries left out).
+  const visible = (entries ?? []).filter((e) => !e.hidden);
+  const owners = proofOwners(visible);
+  const flagsOf = (e: AdminEntry): string[] => {
+    const flags: string[] = [];
+    const best = records(visible, e.p).all.get(e.c);
+    if (!e.b && isFarAbove(e.s, e.u, best)) flags.push(`no proof, over 2× everyone else's best (${best!.s} by ${best!.p})`);
+    const others = otherProofOwners(owners, e.u, e.p);
+    if (others.length) flags.push(`proof also used by ${others.join(", ")}`);
+    return flags;
+  };
+  const flagged = new Map((entries ?? []).map((e) => [e.id, flagsOf(e)]));
+
   const q = filter.trim().toLowerCase();
   const rows = (entries ?? []).filter((e) => {
     if (!showHidden && e.hidden) return false;
+    if (flaggedOnly && flagged.get(e.id)!.length === 0) return false;
     if (!q) return true;
     const c = CHALLENGE_BY_ID.get(e.c);
     return e.p.toLowerCase().includes(q) || e.c.includes(q) || (c?.name.toLowerCase().includes(q) ?? false);
@@ -140,6 +157,10 @@ export function Admin() {
           <input type="checkbox" checked={showHidden} onChange={(e) => setShowHidden((e.target as HTMLInputElement).checked)} />
           Show hidden
         </label>
+        <label class="check">
+          <input type="checkbox" checked={flaggedOnly} onChange={(e) => setFlaggedOnly((e.target as HTMLInputElement).checked)} />
+          Flagged only ({[...flagged.values()].filter((f) => f.length).length})
+        </label>
         <span class="muted">{rows.length} entries</span>
       </div>
 
@@ -157,6 +178,7 @@ export function Admin() {
                 <th class="num">Domination</th>
                 <th>Proof</th>
                 <th>Source</th>
+                <th>Flags</th>
                 <th />
               </tr>
             </thead>
@@ -182,6 +204,7 @@ export function Admin() {
                       >
                         {e.s}
                       </button>
+                      {e.b ? <BugTag /> : null}
                     </td>
                     <td>
                       {e.u ? (
@@ -205,7 +228,18 @@ export function Admin() {
                       {e.source}
                       {e.ipHash ? ` · ${e.ipHash.slice(0, 6)}` : ""}
                     </td>
-                    <td>
+                    <td class="flags">
+                      {flagged.get(e.id)!.map((f) => (
+                        <div>⚠ {f}</div>
+                      ))}
+                    </td>
+                    <td class="actions">
+                      <button
+                        title="Obtained through a fixed game bug: listed but never counted"
+                        onClick={() => act(() => api(`entries/${e.id}`, { method: "PATCH", body: JSON.stringify({ bugged: !e.b }) }))}
+                      >
+                        {e.b ? "Not a bug" : "Bug"}
+                      </button>{" "}
                       {e.hidden ? (
                         <button
                           title={e.hiddenReason ?? ""}

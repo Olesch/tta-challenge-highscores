@@ -1,7 +1,8 @@
 import { useMemo } from "preact/hooks";
 import { CHALLENGE_BY_ID, GROUP_LABELS, SETS } from "../../shared/challenges";
-import { ChallengeImage, Difficulty, Loading, PlayerLink, ProofLink, VerifiedToggle } from "../components";
+import { BugTag, ChallengeImage, Difficulty, Loading, PlayerLink, ProofLink, VerifiedToggle } from "../components";
 import { computeStats, formatDate, useEntries, useVerifiedOnly } from "../data";
+import { RecordHistory } from "../RecordHistory";
 import { Link } from "../router";
 
 const LEVEL_LABEL = { easy: "Easy AI", medium: "Medium AI", hard: "Top AI" };
@@ -16,6 +17,7 @@ export function ChallengePage({ id }: { id: string }) {
   const setLabel = SETS.find((s) => s.id === challenge.set)!.label;
   const board = stats?.boards.get(id) ?? [];
   const history = (entries ?? []).filter((e) => e.c === id).reverse();
+  const bugged = history.filter((e) => e.b && (!verifiedOnly || e.u)).sort((a, b) => b.s - a.s);
 
   return (
     <>
@@ -87,6 +89,39 @@ export function ChallengePage({ id }: { id: string }) {
         </div>
       )}
 
+      {entries && <RecordHistory entries={history} verifiedOnly={verifiedOnly} />}
+
+      {bugged.length > 0 && (
+        <>
+          <h3 class="subhead">Not counted</h3>
+          <p class="muted">
+            These were obtained through a game bug that has since been fixed. They stay listed, but don't count for
+            records, ranks, ratings or totals.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                {bugged.map((e) => (
+                  <tr class="bugged">
+                    <td>
+                      <PlayerLink name={e.p} />
+                    </td>
+                    <td class="num">
+                      {e.s}
+                      <BugTag />
+                    </td>
+                    <td>
+                      <ProofLink url={e.u} />
+                    </td>
+                    <td class="muted">{formatDate(e.t)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
       {history.length > 0 && (
         <details class="history">
           <summary>All {history.length} submissions</summary>
@@ -94,12 +129,15 @@ export function ChallengePage({ id }: { id: string }) {
             <table>
               <tbody>
                 {history.map((e) => (
-                  <tr>
+                  <tr class={e.b ? "bugged" : ""}>
                     <td class="muted">{formatDate(e.t)}</td>
                     <td>
                       <PlayerLink name={e.p} />
                     </td>
-                    <td class="num">{e.s}</td>
+                    <td class="num">
+                      {e.s}
+                      {e.b ? <BugTag /> : null}
+                    </td>
                     <td>
                       <ProofLink url={e.u} />
                     </td>

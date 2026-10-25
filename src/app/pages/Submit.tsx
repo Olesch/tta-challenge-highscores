@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
-import type { SubmitRequest } from "../../shared/api";
-import { CHALLENGES, GROUP_LABELS, SETS, type SetId, groupsOf } from "../../shared/challenges";
+import type { Entry, SubmitRequest } from "../../shared/api";
+import { CHALLENGES, type Challenge, GROUP_LABELS, SETS, type SetId, groupsOf } from "../../shared/challenges";
 import { normalizeProofUrl, playerKey, validateName, validateScore } from "../../shared/validation";
-import { PlayerPicker, Tabs } from "../components";
-import { computeStats, loadConfig, loadEntries, useEntries } from "../data";
+import { PlayerPicker, ProofLink, Tabs } from "../components";
+import { SUSPICIOUS_FACTOR, otherProofOwners, proofOwners, records } from "../checks";
+import { type Best, computeStats, loadConfig, loadEntries, useEntries } from "../data";
 import { DISCORD_CHANNEL_URL } from "../links";
 import { Link, playerHref } from "../router";
 
@@ -37,6 +38,7 @@ export function Submit() {
   const [token, setToken] = useState("");
   const [status, setStatus] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
   const captchaRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
@@ -89,7 +91,11 @@ export function Submit() {
     try {
       const body: SubmitRequest = {
         player: name,
-        scores: filled.map((c) => ({ challengeId: c.id, score: Number(rows[c.id].score), proofUrl: proofFor(c.id) || undefined })),
+        scores: filled.map((c) => ({
+          challengeId: c.id,
+          score: Number(rows[c.id].score),
+          proofUrl: proofFor(c.id) || undefined,
+        })),
         turnstileToken: token || undefined,
       };
       const res = await fetch("/api/entries", {
@@ -106,6 +112,7 @@ export function Submit() {
       }
       setRows({});
       setSharedProof("");
+      setReviewing(false);
       setStatus({ kind: "ok", text: `Saved ${data.count} ${data.count === 1 ? "entry" : "entries"}.` });
       await loadEntries(true);
     } catch (err) {
@@ -138,7 +145,12 @@ export function Submit() {
           </figure>
           <figure>
             <a href="/img/examples/stats.jpg" target="_blank" rel="noopener">
-              <img src="/img/examples/stats.jpg" alt="Example: culture statistics with leaders and wonders" width={1373} height={866} />
+              <img
+                src="/img/examples/stats.jpg"
+                alt="Example: culture statistics with leaders and wonders"
+                width={1373}
+                height={866}
+              />
             </a>
             <figcaption>
               <strong>2. Statistics</strong> — the culture graph together with the leaders and wonders of every player.
@@ -156,9 +168,8 @@ export function Submit() {
           <a href={DISCORD_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
             TtA Discord challenge channel
           </a>
-          ,
-          then right-click the message → <em>Copy Message Link</em> and paste it below. Entries without a link are saved
-          and show up under “All entries”, but not in the official highscores.
+          , then right-click the message → <em>Copy Message Link</em> and paste it below. Entries without a link are
+          saved and show up under “All entries”, but not in the official highscores.
         </p>
       </div>
 
@@ -184,60 +195,75 @@ export function Submit() {
         <span class="muted">Used for every entry that doesn't have its own link.</span>
       </div>
 
-      <div class="sticky-bar">
-        <Tabs
-          value={set}
-          options={SETS.map((s) => {
-            const n = filled.filter((c) => c.set === s.id).length;
-            return { id: s.id, label: n ? `${s.label} (${n})` : s.label };
-          })}
-          onChange={setSet}
+      {reviewing ? (
+        <Review
+          player={name.trim()}
+          items={filled.map((c) => ({
+            challenge: c,
+            score: Number(rows[c.id].score),
+            proof: normalizeProofUrl(proofFor(c.id), guildId),
+          }))}
+          entries={entries ?? []}
+          myBests={me?.bests}
         />
-      </div>
+      ) : (
+        <>
+          <div class="sticky-bar">
+            <Tabs
+              value={set}
+              options={SETS.map((s) => {
+                const n = filled.filter((c) => c.set === s.id).length;
+                return { id: s.id, label: n ? `${s.label} (${n})` : s.label };
+              })}
+              onChange={setSet}
+            />
+          </div>
 
-      <div class="submit-list">
-        {groupsOf(set).map(({ group, challenges }) => (
-          <fieldset>
-            <legend>{GROUP_LABELS[group]}</legend>
-            {challenges.map((c) => {
-              const best = me?.bests.get(c.id);
-              const row = rows[c.id] ?? { score: "", proof: "" };
-              const improved = row.score && best && Number(row.score) <= best.score;
-              return (
-                <div class="submit-row">
-                  <img src={`/img/challenges/${c.id}.jpg`} alt="" width={56} height={47} loading="lazy" />
-                  <div class="submit-name">
-                    <div>{c.name}</div>
-                    <div class="muted">
-                      {c.players}P{best ? ` · your best ${best.score}${best.proof ? " ✓" : ""}` : ""}
+          <div class="submit-list">
+            {groupsOf(set).map(({ group, challenges }) => (
+              <fieldset>
+                <legend>{GROUP_LABELS[group]}</legend>
+                {challenges.map((c) => {
+                  const best = me?.bests.get(c.id);
+                  const row = rows[c.id] ?? { score: "", proof: "" };
+                  const improved = row.score && best && Number(row.score) <= best.score;
+                  return (
+                    <div class="submit-row">
+                      <img src={`/img/challenges/${c.id}.jpg`} alt="" width={56} height={47} loading="lazy" />
+                      <div class="submit-name">
+                        <div>{c.name}</div>
+                        <div class="muted">
+                          {c.players}P{best ? ` · your best ${best.score}${best.proof ? " ✓" : ""}` : ""}
+                        </div>
+                      </div>
+                      <input
+                        class="score-input"
+                        type="number"
+                        inputMode="numeric"
+                        min={0}
+                        step={1}
+                        placeholder="Domination"
+                        aria-label={`${c.name} domination`}
+                        value={row.score}
+                        onInput={(e) => setRow(c.id, { score: (e.target as HTMLInputElement).value })}
+                      />
+                      <input
+                        class="proof-input"
+                        type="url"
+                        placeholder={sharedProof ? "uses link above" : "Discord link (optional)"}
+                        aria-label={`${c.name} proof link`}
+                        value={row.proof}
+                        onInput={(e) => setRow(c.id, { proof: (e.target as HTMLInputElement).value })}
+                      />
+                      {improved && <span class="hint">Not higher than your best</span>}
                     </div>
-                  </div>
-                  <input
-                    class="score-input"
-                    type="number"
-                    inputMode="numeric"
-                    min={0}
-                    step={1}
-                    placeholder="Domination"
-                    aria-label={`${c.name} domination`}
-                    value={row.score}
-                    onInput={(e) => setRow(c.id, { score: (e.target as HTMLInputElement).value })}
-                  />
-                  <input
-                    class="proof-input"
-                    type="url"
-                    placeholder={sharedProof ? "uses link above" : "Discord link (optional)"}
-                    aria-label={`${c.name} proof link`}
-                    value={row.proof}
-                    onInput={(e) => setRow(c.id, { proof: (e.target as HTMLInputElement).value })}
-                  />
-                  {improved && <span class="hint">Not higher than your best</span>}
-                </div>
-              );
-            })}
-          </fieldset>
-        ))}
-      </div>
+                  );
+                })}
+              </fieldset>
+            ))}
+          </div>
+        </>
+      )}
 
       <div class="submit-bar">
         <div>
@@ -259,10 +285,125 @@ export function Submit() {
           )}
         </div>
         <div ref={captchaRef} />
-        <button class="primary" disabled={!canSubmit} onClick={submit}>
-          {busy ? "Saving…" : "Submit"}
-        </button>
+        {reviewing ? (
+          <div class="bar-buttons">
+            <button disabled={busy} onClick={() => setReviewing(false)}>
+              ← Back to editing
+            </button>
+            <button class="primary" disabled={!canSubmit} onClick={submit}>
+              {busy ? "Saving…" : "Confirm & submit"}
+            </button>
+          </div>
+        ) : (
+          <button
+            class="primary"
+            disabled={!canSubmit}
+            onClick={() => {
+              setStatus(null);
+              setReviewing(true);
+              window.scrollTo(0, 0);
+            }}
+          >
+            Check entries →
+          </button>
+        )}
       </div>
     </>
+  );
+}
+
+interface ReviewItem {
+  challenge: Challenge;
+  score: number;
+  proof: string | null;
+}
+
+/** Last look before saving: what each entry changes, plus anything that looks like a mistake. */
+function Review({
+  player,
+  items,
+  entries,
+  myBests,
+}: {
+  player: string;
+  items: ReviewItem[];
+  entries: Entry[];
+  myBests: Map<string, Best> | undefined;
+}) {
+  const current = records(entries);
+  const others = records(entries, player);
+  const owners = proofOwners(entries);
+  const newRecords = items.filter((i) => i.score > (current.verified.get(i.challenge.id)?.s ?? -1)).length;
+
+  return (
+    <section class="review">
+      <h2>Check your entries</h2>
+      <p>
+        Saving <strong>{items.length}</strong> {items.length === 1 ? "entry" : "entries"} as <strong>{player}</strong>.
+        {newRecords > 0 && (
+          <>
+            {" "}
+            <span class="badge record">
+              ★ {newRecords} {newRecords === 1 ? "beats a record" : "beat records"}
+            </span>
+          </>
+        )}
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Challenge</th>
+              <th class="num">Domination</th>
+              <th>Proof</th>
+              <th class="num">Your best</th>
+              <th class="num">Record</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map(({ challenge: c, score, proof }) => {
+              const mine = myBests?.get(c.id);
+              const record = current.verified.get(c.id);
+              const othersBest = others.all.get(c.id);
+              const notes: { kind: "good" | "warn"; text: string }[] = [];
+              if (!record || score > record.s) {
+                notes.push(
+                  proof
+                    ? { kind: "good", text: "★ New record!" }
+                    : { kind: "good", text: "★ Beats the record (add proof to make it official)" },
+                );
+              }
+              if (!mine) notes.push({ kind: "good", text: "First entry for this challenge" });
+              else if (score > mine.score) notes.push({ kind: "good", text: `↑ +${score - mine.score} on your best` });
+              else notes.push({ kind: "warn", text: "Not higher than your best" });
+              if (othersBest && othersBest.s > 0 && score > othersBest.s * SUSPICIOUS_FACTOR) {
+                notes.push({ kind: "warn", text: "More than double everyone else's best. Typo?" });
+              }
+              const reused = otherProofOwners(owners, proof, player);
+              if (reused.length) notes.push({ kind: "warn", text: `Proof link already used by ${reused.join(", ")}` });
+              return (
+                <tr>
+                  <td>
+                    {c.name} <span class="muted">({SETS.find((s) => s.id === c.set)!.label})</span>
+                  </td>
+                  <td class="num score">{score}</td>
+                  <td>{proof ? <ProofLink url={proof} /> : <span class="unverified">none</span>}</td>
+                  <td class="num muted">{mine ? mine.score : "—"}</td>
+                  <td class="num muted" title={record ? `${record.p}` : "No verified record yet"}>
+                    {record ? record.s : "—"}
+                  </td>
+                  <td class="notes">
+                    {notes.map((n) => (
+                      <span class={`badge ${n.kind}`}>{n.text}</span>
+                    ))}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }

@@ -1296,3 +1296,4 @@ INSERT INTO entries (challenge_id, player, player_key, score, proof_url, created
 INSERT INTO entries (challenge_id, player, player_key, score, proof_url, created_at, source) VALUES ('epic4_mix', 'Lemmingsplayer', 'lemmingsplayer', 691, NULL, '2024-07-01T00:00:00.000Z', 'sheet');
 INSERT INTO entries (challenge_id, player, player_key, score, proof_url, created_at, source) VALUES ('time_travellers_mix', 'Lemmingsplayer', 'lemmingsplayer', 235, NULL, '2024-07-01T00:00:00.000Z', 'sheet');
 INSERT INTO entries (challenge_id, player, player_key, score, proof_url, created_at, source) VALUES ('mix4_mix', 'Lemmingsplayer', 'lemmingsplayer', 2554, NULL, '2024-07-01T00:00:00.000Z', 'sheet');
+UPDATE entries SET bugged = 1 WHERE challenge_id = 'mix4_mix' AND score > 1000 AND source = 'sheet';
