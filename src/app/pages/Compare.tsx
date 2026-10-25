@@ -1,8 +1,8 @@
 import { useMemo, useState } from "preact/hooks";
 import { CHALLENGES, SETS, type SetId } from "../../shared/challenges";
 import { playerKey } from "../../shared/validation";
-import { Loading, PlayerLink, PlayerPicker, Stat, Tabs, VerifiedToggle } from "../components";
-import { computeStats, formatRating, useEntries, useVerifiedOnly } from "../data";
+import { Loading, MeasureToggle, PlayerLink, PlayerPicker, Stat, Tabs, VerifiedToggle } from "../components";
+import { computeStats, formatMeasure, measureOf, useEntries, useMeasure, useVerifiedOnly } from "../data";
 import { SetGrid } from "../SetGrid";
 
 function readParam(name: string) {
@@ -15,6 +15,7 @@ export function Compare() {
   const [a, setA] = useState(() => readParam("a"));
   const [b, setB] = useState(() => readParam("b"));
   const [set, setSet] = useState<SetId>("original");
+  const [measure, setMeasure] = useMeasure();
   const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
 
   const update = (which: "a" | "b", value: string) => {
@@ -31,7 +32,10 @@ export function Compare() {
   const pa = stats.players.get(playerKey(a));
   const pb = stats.players.get(playerKey(b));
 
-  let winsA = 0, winsB = 0, ties = 0, both = 0;
+  let winsA = 0,
+    winsB = 0,
+    ties = 0,
+    both = 0;
   if (pa && pb) {
     for (const c of CHALLENGES) {
       const sa = pa.bests.get(c.id)?.score;
@@ -68,11 +72,22 @@ export function Compare() {
             </span>
           )}
         </div>
-        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+        <div class="bar-group">
+          <MeasureToggle value={measure} onChange={setMeasure} />
+          <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+        </div>
       </div>
 
-      {a && !pa && <p class="muted">No {verifiedOnly ? "verified " : ""}entries for “{a}”.</p>}
-      {b && !pb && <p class="muted">No {verifiedOnly ? "verified " : ""}entries for “{b}”.</p>}
+      {a && !pa && (
+        <p class="muted">
+          No {verifiedOnly ? "verified " : ""}entries for “{a}”.
+        </p>
+      )}
+      {b && !pb && (
+        <p class="muted">
+          No {verifiedOnly ? "verified " : ""}entries for “{b}”.
+        </p>
+      )}
 
       {pa && pb && (
         <>
@@ -91,9 +106,8 @@ export function Compare() {
                   {SETS.map((s) => (
                     <th class="num">{s.label}</th>
                   ))}
-                  <th class="num">Total</th>
+                  <th class="num">{measure === "rating" ? "Rating" : "Total"}</th>
                   <th class="num">Records</th>
-                  <th class="num">Rating</th>
                 </tr>
               </thead>
               <tbody>
@@ -103,28 +117,28 @@ export function Compare() {
                       <PlayerLink name={p.name} />
                     </td>
                     {SETS.map((s) => (
-                      <td class="num">{p.totals[s.id]}</td>
+                      <td class="num">{formatMeasure(measureOf(p, measure, s.id), measure)}</td>
                     ))}
-                    <td class="num score">{p.total}</td>
+                    <td class="num score">{formatMeasure(measureOf(p, measure), measure)}</td>
                     <td class="num">{p.records}</td>
-                    <td class="num score">{formatRating(p.rating)}</td>
                   </tr>
                 ))}
                 <tr class="diff-row">
                   <td>Difference</td>
                   {SETS.map((s) => (
                     <td class="num">
-                      <Diff value={pa.totals[s.id] - pb.totals[s.id]} />
+                      <MeasureDiff
+                        a={measureOf(pa, measure, s.id)}
+                        b={measureOf(pb, measure, s.id)}
+                        rating={measure === "rating"}
+                      />
                     </td>
                   ))}
                   <td class="num">
-                    <Diff value={pa.total - pb.total} />
+                    <MeasureDiff a={measureOf(pa, measure)} b={measureOf(pb, measure)} rating={measure === "rating"} />
                   </td>
                   <td class="num">
                     <Diff value={pa.records - pb.records} />
-                  </td>
-                  <td class="num">
-                    <Diff value={Math.round((pa.rating - pb.rating) * 10) / 10} suffix="%" />
                   </td>
                 </tr>
               </tbody>
@@ -158,6 +172,11 @@ export function Compare() {
       )}
     </>
   );
+}
+
+/** Difference in the chosen measure; ratings are rounded to one decimal and shown in %. */
+function MeasureDiff({ a, b, rating }: { a: number; b: number; rating: boolean }) {
+  return rating ? <Diff value={Math.round((a - b) * 10) / 10} suffix="%" /> : <Diff value={a - b} />;
 }
 
 function Diff({ value, suffix = "" }: { value: number; suffix?: string }) {

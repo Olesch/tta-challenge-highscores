@@ -1,7 +1,24 @@
 import { useMemo, useState } from "preact/hooks";
 import { CHALLENGES, GROUP_LABELS, SETS, type SetId, groupsOf } from "../../shared/challenges";
-import { ChallengeImage, Difficulty, Loading, PlayerLink, ScoreHolder, Tabs, VerifiedToggle } from "../components";
-import { type ScopeTotal, computeStats, formatRating, scopeTotal, useEntries, useVerifiedOnly } from "../data";
+import {
+  ChallengeImage,
+  Difficulty,
+  Loading,
+  MeasureToggle,
+  PlayerLink,
+  ScoreHolder,
+  Tabs,
+  VerifiedToggle,
+} from "../components";
+import {
+  type ScopeTotal,
+  computeStats,
+  formatRating,
+  scopeTotal,
+  useEntries,
+  useMeasure,
+  useVerifiedOnly,
+} from "../data";
 import { Link, challengeHref } from "../router";
 import { SetGrid } from "../SetGrid";
 import { TTA_APP_URL } from "../links";
@@ -35,7 +52,12 @@ function TotalsLine({ total }: { total: ScopeTotal }) {
     <span class="totals-line">
       <span title="Sum of every record in this scope — what all players together have achieved">
         Pooled <strong>{total.pooled}</strong>
-        {total.covered < total.size && <span class="muted"> ({total.covered}/{total.size})</span>}
+        {total.covered < total.size && (
+          <span class="muted">
+            {" "}
+            ({total.covered}/{total.size})
+          </span>
+        )}
       </span>
       {best && (
         <span title="Highest sum of one player's own best dominations in this scope">
@@ -52,6 +74,7 @@ export function Highscores() {
   const [set, setSet] = useState<SetId>(readSet);
   const stats = useMemo(() => entries && computeStats(entries, verifiedOnly), [entries, verifiedOnly]);
 
+  const [measure, setMeasure] = useMeasure();
   const [view, setView] = useState<View>(readView);
   const chooseView = (v: View) => {
     setView(v);
@@ -75,7 +98,13 @@ export function Highscores() {
 
   const groups = groupsOf(set);
   const scopes = [
-    ...SETS.map((s) => ({ label: s.label, total: scopeTotal(stats, CHALLENGES.filter((c) => c.set === s.id)) })),
+    ...SETS.map((s) => ({
+      label: s.label,
+      total: scopeTotal(
+        stats,
+        CHALLENGES.filter((c) => c.set === s.id),
+      ),
+    })),
     { label: "Everything", total: scopeTotal(stats, CHALLENGES) },
   ];
   const recordHolders = [...stats.players.values()].filter((p) => p.records > 0).sort((a, b) => b.records - a.records);
@@ -134,46 +163,51 @@ export function Highscores() {
         />
       )}
 
-      {view === "cards" && groups.map(({ group, challenges }) => (
-        <section class="group" style={{ "--group-bg": `url(/img/groups/${group}.jpg)` }}>
-          <div class="group-head">
-            <h2 class="group-title">{GROUP_LABELS[group] ?? group}</h2>
-            <TotalsLine total={scopeTotal(stats, challenges)} />
-          </div>
-          <div class="cards">
-            {challenges.map((c) => {
-              const board = stats.boards.get(c.id) ?? [];
-              return (
-                <div class="card">
-                  <Link class="card-link" href={challengeHref(c.id)} aria-label={c.name}>
-                    <ChallengeImage challenge={c} class="card-img" />
-                  </Link>
-                  <div class="card-body">
-                    <Link class="card-title" href={challengeHref(c.id)}>
-                      {c.name}
+      {view === "cards" &&
+        groups.map(({ group, challenges }) => (
+          <section class="group" style={{ "--group-bg": `url(/img/groups/${group}.jpg)` }}>
+            <div class="group-head">
+              <h2 class="group-title">{GROUP_LABELS[group] ?? group}</h2>
+              <TotalsLine total={scopeTotal(stats, challenges)} />
+            </div>
+            <div class="cards">
+              {challenges.map((c) => {
+                const board = stats.boards.get(c.id) ?? [];
+                return (
+                  <div class="card">
+                    <Link class="card-link" href={challengeHref(c.id)} aria-label={c.name}>
+                      <ChallengeImage challenge={c} class="card-img" />
                     </Link>
-                    <div class="card-meta">
-                      {c.players}P <Difficulty value={c.difficulty} />
-                      <span class="muted">{board.length} players</span>
-                    </div>
-                    <div class="card-record">
-                      <ScoreHolder best={board[0]} />
+                    <div class="card-body">
+                      <Link class="card-title" href={challengeHref(c.id)}>
+                        {c.name}
+                      </Link>
+                      <div class="card-meta">
+                        {c.players}P <Difficulty value={c.difficulty} />
+                        <span class="muted">{board.length} players</span>
+                      </div>
+                      <div class="card-record">
+                        <ScoreHolder best={board[0]} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+                );
+              })}
+            </div>
+          </section>
+        ))}
 
       <section>
-        <h2>Totals</h2>
+        <div class="page-head">
+          <h2>Totals</h2>
+          <MeasureToggle value={measure} onChange={setMeasure} />
+        </div>
         <p class="lead">
           <strong>Pooled</strong> adds up the record of every challenge, as if all players formed one team.{" "}
-          <strong>Best single player</strong> is the highest sum of one player's own best dominations.{" "}
-          <strong>Best rating</strong> averages each player's best as a percentage of the record over all challenges
-          in scope (see <Link href="/players">Players</Link>).
+          <strong>Best single player</strong> ranks players by{" "}
+          {measure === "rating"
+            ? "rating: each best as a percentage of the record, averaged over the challenges in scope."
+            : "the sum of their own best dominations."}
         </p>
         <div class="table-wrap">
           <table>
@@ -184,51 +218,44 @@ export function Highscores() {
                 <th class="num">Records set</th>
                 <th>Best single player</th>
                 <th>Runners-up</th>
-                <th>Best rating</th>
               </tr>
             </thead>
             <tbody>
-              {scopes.map(({ label, total }) => (
-                <tr>
-                  <td>{label}</td>
-                  <td class="num score">{total.pooled}</td>
-                  <td class="num">
-                    {total.covered}/{total.size}
-                  </td>
-                  <td>
-                    {total.ranking[0] ? (
-                      <>
-                        <strong>{total.ranking[0].total}</strong> <PlayerLink name={total.ranking[0].name} />{" "}
-                        <span class="muted">
-                          ({total.ranking[0].played}/{total.size} played)
-                        </span>
-                      </>
-                    ) : (
-                      <span class="muted">—</span>
-                    )}
-                  </td>
-                  <td>
-                    {total.ranking.slice(1, 4).map((r, i) => (
-                      <span>
-                        {i > 0 && ", "}
-                        <PlayerLink name={r.name} /> <span class="muted">{r.total}</span>
-                      </span>
-                    ))}
-                  </td>
-                  <td>
-                    {(() => {
-                      const top = [...total.ranking].sort((a, b) => b.rating - a.rating)[0];
-                      return top ? (
+              {scopes.map(({ label, total }) => {
+                const ranking =
+                  measure === "rating" ? [...total.ranking].sort((a, b) => b.rating - a.rating) : total.ranking;
+                const value = (r: (typeof ranking)[number]) =>
+                  measure === "rating" ? formatRating(r.rating) : r.total;
+                return (
+                  <tr>
+                    <td>{label}</td>
+                    <td class="num score">{total.pooled}</td>
+                    <td class="num">
+                      {total.covered}/{total.size}
+                    </td>
+                    <td>
+                      {ranking[0] ? (
                         <>
-                          <strong>{formatRating(top.rating)}</strong> <PlayerLink name={top.name} />
+                          <strong>{value(ranking[0])}</strong> <PlayerLink name={ranking[0].name} />{" "}
+                          <span class="muted">
+                            ({ranking[0].played}/{total.size} played)
+                          </span>
                         </>
                       ) : (
                         <span class="muted">—</span>
-                      );
-                    })()}
-                  </td>
-                </tr>
-              ))}
+                      )}
+                    </td>
+                    <td>
+                      {ranking.slice(1, 4).map((r, i) => (
+                        <span>
+                          {i > 0 && ", "}
+                          <PlayerLink name={r.name} /> <span class="muted">{value(r)}</span>
+                        </span>
+                      ))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

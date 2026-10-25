@@ -200,6 +200,38 @@ export function useVerifiedOnly(): [boolean, (v: boolean) => void] {
   return [value, set];
 }
 
+/** How players are compared: % rating, or the plain sum of best dominations. */
+export type Measure = "rating" | "total";
+
+export function useMeasure(): [Measure, (m: Measure) => void] {
+  const [value, setValue] = useState<Measure>(() => {
+    try {
+      return localStorage.getItem("measure") === "total" ? "total" : "rating";
+    } catch {
+      return "rating";
+    }
+  });
+  const set = (m: Measure) => {
+    setValue(m);
+    try {
+      localStorage.setItem("measure", m);
+    } catch {
+      /* storage unavailable */
+    }
+  };
+  return [value, set];
+}
+
+/** A player's overall value, or for one set, in the chosen measure. */
+export function measureOf(p: PlayerSummary, m: Measure, set?: SetId): number {
+  if (m === "rating") return set ? p.ratings[set] : p.rating;
+  return set ? p.totals[set] : p.total;
+}
+
+export function formatMeasure(value: number, m: Measure): string {
+  return m === "rating" ? formatRating(value) : String(value);
+}
+
 export function formatRating(rating: number): string {
   return `${rating.toFixed(1)}%`;
 }

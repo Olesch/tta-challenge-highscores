@@ -1,6 +1,6 @@
 import type { ComponentChildren } from "preact";
 import type { Challenge } from "../shared/challenges";
-import type { Best } from "./data";
+import type { Best, Measure } from "./data";
 import { Link, playerHref } from "./router";
 
 export function ChallengeImage({ challenge, class: cls }: { challenge: Challenge; class?: string }) {
@@ -19,7 +19,12 @@ export function Difficulty({ value }: { value: number }) {
 }
 
 export function ProofLink({ url }: { url: string | null }) {
-  if (!url) return <span class="unverified" title="No proof linked">unverified</span>;
+  if (!url)
+    return (
+      <span class="unverified" title="No proof linked">
+        unverified
+      </span>
+    );
   return (
     <a class="proof" href={url} target="_blank" rel="noopener noreferrer" title="Open proof in Discord">
       ✓ proof
@@ -58,6 +63,27 @@ export function VerifiedToggle({ value, onChange }: { value: boolean; onChange: 
   );
 }
 
+export function MeasureToggle({ value, onChange }: { value: Measure; onChange: (m: Measure) => void }) {
+  return (
+    <div class="segmented" role="group" aria-label="Compare players by">
+      <button
+        class={value === "rating" ? "active" : ""}
+        onClick={() => onChange("rating")}
+        title="Each best as a % of the record, averaged over all challenges"
+      >
+        Rating
+      </button>
+      <button
+        class={value === "total" ? "active" : ""}
+        onClick={() => onChange("total")}
+        title="Sum of each player's best dominations"
+      >
+        Total
+      </button>
+    </div>
+  );
+}
+
 export function Tabs<T extends string>({
   value,
   options,
@@ -70,7 +96,12 @@ export function Tabs<T extends string>({
   return (
     <div class="tabs" role="tablist">
       {options.map((o) => (
-        <button role="tab" aria-selected={o.id === value} class={o.id === value ? "active" : ""} onClick={() => onChange(o.id)}>
+        <button
+          role="tab"
+          aria-selected={o.id === value}
+          class={o.id === value ? "active" : ""}
+          onClick={() => onChange(o.id)}
+        >
           {o.label}
         </button>
       ))}
@@ -126,7 +157,10 @@ export function PlayerPicker({
 /** Marks an entry obtained through a since-fixed game bug. */
 export function BugTag() {
   return (
-    <span class="bug-tag" title="Obtained through a game bug that has since been fixed. Listed, but not counted anywhere.">
+    <span
+      class="bug-tag"
+      title="Obtained through a game bug that has since been fixed. Listed, but not counted anywhere."
+    >
       bug
     </span>
   );
