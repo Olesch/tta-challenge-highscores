@@ -16,7 +16,33 @@ Scoreboard for the challenges of the *Through the Ages* app. Replaces the Google
 
 Stack: one Cloudflare Worker (serves the Preact frontend and a small `/api`) + a D1 database. Fits the free plan.
 
-## Develop
+## Everyday: change something and put it live
+
+Needs [Node.js](https://nodejs.org) (LTS) and git. On a new computer, once:
+
+```bash
+git clone <this repository>
+cd "Challenges TTA"
+npm install
+npx wrangler login
+```
+
+Then for every change:
+
+1. Try it locally with `npm run dev` and open http://localhost:5173 (uses a local test database, see below).
+2. Double-click **`deploy.bat`** (or run `npm run deploy`). It backs up the live database, applies any new
+   migrations, builds and uploads. The site is live a few seconds later at
+   https://tta-challenges.olesch.workers.dev.
+3. Commit: `git add -A` and `git commit -m "what changed"`.
+
+If the build stops with a TypeScript error, the message names the file and line; nothing was uploaded.
+A database change goes into a new numbered file in `migrations/` (e.g. `0004_something.sql`);
+`deploy.bat` applies it to the live database before uploading the code.
+
+To undo a bad deploy: `npx wrangler rollback` (puts the previous version back), or check out the old commit and
+deploy again.
+
+## Develop (local test database)
 
 ```bash
 npm install
