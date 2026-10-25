@@ -25,6 +25,15 @@ function storedToken() {
   }
 }
 
+/** Remember that this browser belongs to an admin, so the header shows an Admin link (no secret is stored). */
+function markAdminBrowser() {
+  try {
+    localStorage.setItem("isAdmin", "1");
+  } catch {
+    /* storage unavailable */
+  }
+}
+
 export function Admin() {
   const [token, setToken] = useState(storedToken);
   const [password, setPassword] = useState("");
@@ -56,6 +65,7 @@ export function Admin() {
       (d) => {
         setEntries(d as AdminEntry[]);
         setError(null);
+        markAdminBrowser();
       },
       (e: Error) => setError(e.message),
     );

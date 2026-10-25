@@ -21,6 +21,14 @@ const NAV = [
   { href: "/weekly", label: "Weekly winners" },
 ];
 
+function isAdminBrowser() {
+  try {
+    return localStorage.getItem("isAdmin") === "1";
+  } catch {
+    return false;
+  }
+}
+
 function resolve(path: string): { title: string; page: preact.JSX.Element } {
   let m: RegExpMatchArray | null;
   if (path === "/") return { title: "Highscores", page: <Highscores /> };
@@ -76,6 +84,11 @@ function App() {
               {n.label}
             </Link>
           ))}
+          {isAdminBrowser() && (
+            <Link href="/admin" class={url.pathname === "/admin" ? "active" : ""}>
+              Admin
+            </Link>
+          )}
           <Link href="/submit" class={`submit-link ${url.pathname === "/submit" ? "active" : ""}`}>
             Submit domination
           </Link>
