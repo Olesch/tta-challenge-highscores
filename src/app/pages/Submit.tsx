@@ -239,8 +239,6 @@ export function Submit() {
                       <input
                         class="score-input"
                         type="number"
-                        inputMode="numeric"
-                        min={0}
                         step={1}
                         placeholder="Domination"
                         aria-label={`${c.name} domination`}
@@ -333,7 +331,9 @@ function Review({
   const current = records(entries);
   const others = records(entries, player);
   const owners = proofOwners(entries);
-  const newRecords = items.filter((i) => i.score > (current.verified.get(i.challenge.id)?.s ?? -1)).length;
+  const newRecords = items.filter(
+    (i) => i.score >= 0 && i.score > (current.verified.get(i.challenge.id)?.s ?? -Infinity),
+  ).length;
 
   return (
     <section class="review">
@@ -367,7 +367,9 @@ function Review({
               const record = current.verified.get(c.id);
               const othersBest = others.all.get(c.id);
               const notes: { kind: "good" | "warn"; text: string }[] = [];
-              if (!record || score > record.s) {
+              if (score < 0) {
+                notes.push({ kind: "warn", text: "Negative scores are not counted in your sums/percentages" });
+              } else if (!record || score > record.s) {
                 notes.push(
                   proof
                     ? { kind: "good", text: "★ New record!" }

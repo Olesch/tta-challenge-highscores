@@ -1,4 +1,4 @@
-export const MIN_SCORE = 0;
+export const MIN_SCORE = -9999;
 export const MAX_SCORE = 9999;
 export const MAX_NAME_LENGTH = 32;
 
@@ -17,6 +17,11 @@ export function validateName(name: string): string | null {
   if (n.length > MAX_NAME_LENGTH) return `Name must be at most ${MAX_NAME_LENGTH} characters.`;
   if (/[<>]/.test(n)) return "Name contains invalid characters.";
   return null;
+}
+
+/** Negative dominations (lost games) are listed and ranked, but count as 0 in sums and percentages. */
+export function countedScore(score: number): number {
+  return Math.max(0, score);
 }
 
 export function validateScore(score: number): string | null {

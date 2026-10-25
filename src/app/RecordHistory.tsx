@@ -31,13 +31,15 @@ const W = 800;
 const H = 220;
 const PAD = { top: 16, right: 16, bottom: 28, left: 48 };
 
-function niceTicks(max: number, count = 4): number[] {
-  const raw = max / count;
+/** Round ticks from at most `min` (and 0) to at least `max`, so every value stays inside the plot. */
+function niceTicks(min: number, max: number, count = 4): number[] {
+  const lo = Math.min(0, min);
+  const hi = Math.max(0, max);
+  const raw = (hi - lo) / count;
   const mag = 10 ** Math.floor(Math.log10(raw || 1));
   const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? raw;
-  // Always end on a tick at or above max, so the top value stays inside the plot.
-  const ticks = [0];
-  while (ticks[ticks.length - 1] < max) ticks.push(ticks[ticks.length - 1] + step);
+  const ticks = [Math.floor(lo / step) * step];
+  while (ticks[ticks.length - 1] < hi) ticks.push(ticks[ticks.length - 1] + step);
   return ticks;
 }
 
@@ -49,10 +51,12 @@ export function RecordHistory({ entries, verifiedOnly }: { entries: Entry[]; ver
   const now = Date.now();
   const t0 = steps[0].t;
   const t1 = Math.max(now, steps[steps.length - 1].t + 1);
-  const yTicks = niceTicks(steps[steps.length - 1].score);
-  const yMax = yTicks[yTicks.length - 1] || 1;
+  // Records only go up, so the first is the lowest (it can be negative: a lost game).
+  const yTicks = niceTicks(steps[0].score, steps[steps.length - 1].score);
+  const yMin = yTicks[0];
+  const yMax = yTicks[yTicks.length - 1] > yMin ? yTicks[yTicks.length - 1] : yMin + 1;
   const x = (t: number) => PAD.left + ((t - t0) / (t1 - t0)) * (W - PAD.left - PAD.right);
-  const y = (v: number) => H - PAD.bottom - (v / yMax) * (H - PAD.top - PAD.bottom);
+  const y = (v: number) => H - PAD.bottom - ((v - yMin) / (yMax - yMin)) * (H - PAD.top - PAD.bottom);
 
   // Step line: hold each record flat until the next one, then extend to today.
   let path = `M${x(steps[0].t)},${y(steps[0].score)}`;

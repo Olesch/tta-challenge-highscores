@@ -6,6 +6,7 @@ Scoreboard for the challenges of the *Through the Ages* app. Replaces the Google
   without one it is saved but only shown under "All entries".
 - Anyone can download all entries as CSV or JSON (footer of every page).
 - **Rating** = each best domination as a % of the record, averaged over all 97 challenges (unplayed = 0%).
+- Negative dominations (lost games) are accepted and ranked, but count as 0 in sums, pooled totals and ratings.
 - Entries flagged as **bug** (e.g. the Final Mix scores from a since-fixed game bug) stay listed but never count
   for records, ranks, ratings or totals. Toggle the flag on the admin page.
 - Submitting shows a review step first (new records, personal bests, likely typos, reused proof links).

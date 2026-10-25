@@ -1,6 +1,6 @@
 import type { Entry } from "../shared/api";
 import { CHALLENGES, CHALLENGE_BY_ID, SETS } from "../shared/challenges";
-import { playerKey } from "../shared/validation";
+import { countedScore, playerKey } from "../shared/validation";
 
 /**
  * Link previews (Open Graph tags) for Discord and other chat apps: they read these tags
@@ -67,7 +67,8 @@ function playerPreview(name: string, entries: Entry[], origin: string): Preview 
     const top = topOf(byPlayer)!;
     played++;
     if (mine.score === top.score) records++;
-    pctSum += top.score > 0 ? (100 * mine.score) / top.score : 100;
+    const record = countedScore(top.score);
+    pctSum += record > 0 ? (100 * countedScore(mine.score)) / record : 0;
   }
   const rating = (pctSum / CHALLENGES.length).toFixed(1);
   return {

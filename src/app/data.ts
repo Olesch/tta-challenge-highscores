@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import type { Config, Entry } from "../shared/api";
 import { CHALLENGES, type Challenge, type SetId, CHALLENGE_BY_ID } from "../shared/challenges";
-import { playerKey } from "../shared/validation";
+import { countedScore, playerKey } from "../shared/validation";
 
 /** A player's best score on one challenge. */
 export interface Best {
@@ -68,7 +68,8 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
     board.sort((a, b) => b.score - a.score || a.t.localeCompare(b.t));
     board.forEach((b, i) => {
       b.rank = i > 0 && board[i - 1].score === b.score ? board[i - 1].rank : i + 1;
-      b.pct = board[0].score > 0 ? (100 * b.score) / board[0].score : 100;
+      const record = countedScore(board[0].score);
+      b.pct = record > 0 ? (100 * countedScore(b.score)) / record : 0;
     });
   }
 
@@ -95,9 +96,9 @@ export function computeStats(entries: Entry[], verifiedOnly: boolean): Stats {
       p.played++;
       if (b.proof) p.verified++;
       if (b.rank === 1) p.records++;
-      p.total += b.score;
+      p.total += countedScore(b.score);
       const set = CHALLENGE_BY_ID.get(b.challengeId)!.set;
-      p.totals[set] += b.score;
+      p.totals[set] += countedScore(b.score);
       p.rating += b.pct / CHALLENGES.length;
       p.ratings[set] += b.pct / SET_SIZES[set];
     }
@@ -128,7 +129,7 @@ export function scopeTotal(stats: Stats, challenges: Challenge[]): ScopeTotal {
   for (const c of challenges) {
     const top = stats.boards.get(c.id)?.[0];
     if (top) {
-      pooled += top.score;
+      pooled += countedScore(top.score);
       covered++;
     }
   }
@@ -140,7 +141,7 @@ export function scopeTotal(stats: Stats, challenges: Challenge[]): ScopeTotal {
     for (const c of challenges) {
       const b = p.bests.get(c.id);
       if (b) {
-        total += b.score;
+        total += countedScore(b.score);
         played++;
         pctSum += b.pct;
       }
