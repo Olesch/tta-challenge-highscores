@@ -11,6 +11,7 @@ import {
   VerifiedToggle,
 } from "../components";
 import {
+  type Measure,
   type ScopeTotal,
   computeStats,
   formatRating,
@@ -45,9 +46,18 @@ function readView(): View {
   }
 }
 
-/** "Pooled 1234 · Best player: Name 1100" */
-function TotalsLine({ total }: { total: ScopeTotal }) {
-  const best = total.ranking[0];
+/** Players of a scope, best first, by the chosen measure. */
+function rankingBy(total: ScopeTotal, measure: Measure) {
+  return measure === "rating" ? [...total.ranking].sort((a, b) => b.rating - a.rating) : total.ranking;
+}
+
+function scopeValue(r: ScopeTotal["ranking"][number], measure: Measure) {
+  return measure === "rating" ? formatRating(r.rating) : r.total;
+}
+
+/** "Pooled 1234 · Best player 1100 Name" (or "Best player 87.3% Name" when ranking by rating) */
+function TotalsLine({ total, measure }: { total: ScopeTotal; measure: Measure }) {
+  const best = rankingBy(total, measure)[0];
   return (
     <span class="totals-line">
       <span title="Sum of every record in this scope — what all players together have achieved">
@@ -60,8 +70,14 @@ function TotalsLine({ total }: { total: ScopeTotal }) {
         )}
       </span>
       {best && (
-        <span title="Highest sum of one player's own best dominations in this scope">
-          Best player <strong>{best.total}</strong> <PlayerLink name={best.name} />
+        <span
+          title={
+            measure === "rating"
+              ? "Highest rating here: each best as a % of the record, averaged over these challenges"
+              : "Highest sum of one player's own best dominations here"
+          }
+        >
+          Best player <strong>{scopeValue(best, measure)}</strong> <PlayerLink name={best.name} />
         </span>
       )}
     </span>
@@ -132,10 +148,13 @@ export function Highscores() {
           <Tabs value={set} options={SETS} onChange={chooseSet} />
           <Tabs value={view} options={VIEWS} onChange={chooseView} />
         </div>
-        <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+        <div class="bar-group">
+          <MeasureToggle value={measure} onChange={setMeasure} />
+          <VerifiedToggle value={verifiedOnly} onChange={setVerifiedOnly} />
+        </div>
       </div>
       <p class="set-totals">
-        <TotalsLine total={scopes[SETS.findIndex((s) => s.id === set)].total} />
+        <TotalsLine total={scopes[SETS.findIndex((s) => s.id === set)].total} measure={measure} />
       </p>
 
       {view === "compact" && (
@@ -143,10 +162,18 @@ export function Highscores() {
           set={set}
           label={(challenges) => {
             const total = scopeTotal(stats, challenges);
+            const best = rankingBy(total, measure)[0];
             return (
-              <span class="muted" title="Pooled: sum of this group's records">
-                Pooled {total.pooled}
-              </span>
+              <>
+                <div class="muted" title="Pooled: sum of this group's records">
+                  Pooled {total.pooled}
+                </div>
+                {best && (
+                  <div class="muted" title="Best player in this group">
+                    Best {scopeValue(best, measure)} {best.name}
+                  </div>
+                )}
+              </>
             );
           }}
           cell={(c) => {
@@ -168,7 +195,7 @@ export function Highscores() {
           <section class="group" style={{ "--group-bg": `url(/img/groups/${group}.jpg)` }}>
             <div class="group-head">
               <h2 class="group-title">{GROUP_LABELS[group] ?? group}</h2>
-              <TotalsLine total={scopeTotal(stats, challenges)} />
+              <TotalsLine total={scopeTotal(stats, challenges)} measure={measure} />
             </div>
             <div class="cards">
               {challenges.map((c) => {
@@ -198,10 +225,7 @@ export function Highscores() {
         ))}
 
       <section>
-        <div class="page-head">
-          <h2>Totals</h2>
-          <MeasureToggle value={measure} onChange={setMeasure} />
-        </div>
+        <h2>Totals</h2>
         <p class="lead">
           <strong>Pooled</strong> adds up the record of every challenge, as if all players formed one team.{" "}
           <strong>Best single player</strong> ranks players by{" "}
@@ -222,10 +246,8 @@ export function Highscores() {
             </thead>
             <tbody>
               {scopes.map(({ label, total }) => {
-                const ranking =
-                  measure === "rating" ? [...total.ranking].sort((a, b) => b.rating - a.rating) : total.ranking;
-                const value = (r: (typeof ranking)[number]) =>
-                  measure === "rating" ? formatRating(r.rating) : r.total;
+                const ranking = rankingBy(total, measure);
+                const value = (r: (typeof ranking)[number]) => scopeValue(r, measure);
                 return (
                   <tr>
                     <td>{label}</td>
