@@ -120,3 +120,9 @@ Run it again to change it. Keep the password in your password manager. Then open
 You can mark verified entries as checked once you have looked at their Discord proof (private, reset when the
 proof link changes), hide entries (cheats, mistakes), mark entries as bug, edit a domination or proof link, merge two player
 names, and filter for flagged entries (unproven scores over 2× everyone else's best, proof links used by two players).
+
+## License
+
+The code is released under the [MIT License](LICENSE). This does not cover *Through the Ages* itself: the
+challenge texts and pictures belong to Czech Games Edition and are not part of this repository (see
+*Game files*). The submitted results in `seed/` and `data/weekly.json` were collected by the TtA community.
