@@ -1,14 +1,18 @@
 # TtA Challenge Highscores
 
+**Retired:** the site now lives in the TtA Community Hub at https://ttacommunity.org/challenges/.
+The Cloudflare Worker was deleted on 2026-10-30; don't run `deploy.bat` /
+`npm run deploy` here, it would bring the old site back.
+
 Domination leaderboard for the Through the Ages app challenges. One Cloudflare Worker (Preact SPA + `/api`) and a
-D1 database, on the free plan. Live: https://tta-challenges.olesch.workers.dev. README.md has the full overview.
+D1 database, on the free plan. README.md has the full overview.
 
 ## Commands
 
 - `npm run dev` — local site on http://localhost:5173 with a local D1 (`npm run db:migrate:local` and
   `npm run db:import:local` fill it). `.claude/launch.json` config `tta-dev` starts it in the preview pane.
 - `npm run typecheck` — must pass before deploying.
-- `deploy.bat` / `npm run deploy` — the owner has authorized deploys and commits in this project.
+- `deploy.bat` / `npm run deploy` — retired, see above.
 - Windows: the Bash tool's `npm` may be missing from PATH; `C:/Program Files/nodejs/node.exe` works. Python with
   openpyxl/pyyaml/pillow is `/c/Python313/python.exe`.
 

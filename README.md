@@ -1,5 +1,9 @@
 # TtA Challenge Highscores
 
+> **This site has moved to the TtA Community Hub: https://ttacommunity.org/challenges/**
+> Submit and browse challenge dominations there. This repository is the original stand-alone version; its
+> Cloudflare Worker (tta-challenges.olesch.workers.dev) was shut down on 30 October 2026 and is kept for reference.
+
 Scoreboard for the challenges of the *Through the Ages* app. Replaces the Google Sheet + Form.
 
 - Anyone can submit their domination (final score minus the second-place score), no accounts. An entry with a Discord message link (from the TtA server) counts as **verified**;
